@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +13,42 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+/**
+ * Auth Routes
+ */
+Route::prefix('auth')->namespace('Auth')->group(function () {
+    /**
+     * Login Routes
+     */
+    Route::post('login', 'LoginController@login');
+    Route::post('logout', 'LoginController@logout');
+
+    /**
+     * Password Reset Routes
+     */
+    Route::prefix('password')->group(function () {
+        Route::get('', 'ResetPasswordController@request');
+        Route::post('reset', 'ResetPasswordController@reset');
+    });
+});
+
+/**
+ * Registration Routes
+ */
+Route::prefix('registration')->group(function () {
+    /**
+     * Registration Routes
+     */
+    Route::namespace('Users')->group(function () {
+        Route::post('users', 'UserController@store');
+    });
+
+    /**
+     * Verification Routes
+     */
+    Route::prefix('verify')->namespace('Auth')->group(function () {
+        Route::post('', 'VerificationController@verifyEmail');
+        Route::post('resend', 'VerificationController@resend')->name('resend_verification');
+        Route::get('token', 'VerificationController@verifyToken');
+    });
 });
