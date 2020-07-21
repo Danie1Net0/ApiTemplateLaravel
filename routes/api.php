@@ -52,3 +52,11 @@ Route::prefix('registration')->group(function () {
         Route::get('token', 'VerificationController@verifyToken');
     });
 });
+
+/**
+ * Access Control Routes
+ */
+Route::namespace('AccessControl')->group(function () {
+    Route::resource('roles', 'RoleController');
+    Route::resource('permissions', 'PermissionController')->only(['index', 'show']);
+});

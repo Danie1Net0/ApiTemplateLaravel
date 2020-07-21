@@ -21,6 +21,11 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable, HasRoles, HasTelephones;
 
     /**
+     * @var string
+     */
+    protected $guard_name = 'api';
+
+    /**
      * @var string[]
      */
     protected $fillable = [

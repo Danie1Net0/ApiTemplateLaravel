@@ -6,6 +6,7 @@ use App\Http\Resources\Validations\MessageResponseResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
@@ -52,12 +53,15 @@ class Handler extends ExceptionHandler
      *
      * @param  Request  $request
      * @param Throwable $exception
-     * @return Response
+     * @return JsonResponse|object
      *
      * @throws Throwable
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof DeleteResourceException)
+            return new MessageResponseResource(['success' => false, 'message' => $exception->getMessage()]);
+
         if ($exception instanceof ValidationException)
             return (new MessageResponseResource(['success' => false, 'message' => collect($exception->errors())->first()]))
                 ->response()
