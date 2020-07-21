@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Users\User;
+namespace App\Http\Requests\Users\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Class CreateUserRequest
- * @package App\Http\Requests\Users\User
+ * @package App\Http\Requests\Users\Users
  */
 class CreateUserRequest extends FormRequest
 {
@@ -30,10 +30,11 @@ class CreateUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'max:20', 'confirmed'],
+            'password' => ['nullable', 'string', 'max:20', 'confirmed'],
             'telephones' => ['nullable', 'array'],
             'telephones.*.number' => ['required', 'string', 'max:15'],
-            'telephones.*.type' => ['required', 'string', 'max:15']
+            'telephones.*.type' => ['required', 'string', 'max:15'],
+            'role' => ['nullable', 'string', 'exists:roles,name']
         ];
     }
 }

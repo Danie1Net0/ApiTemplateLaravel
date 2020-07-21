@@ -5,10 +5,10 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class VerificationRequest
+ * Class ValidateEmailRequest
  * @package App\Http\Requests\Auth
  */
-class VerificationRequest extends FormRequest
+class TokenValidationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

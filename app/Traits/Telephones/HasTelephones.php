@@ -26,6 +26,6 @@ trait HasTelephones
     public function updateTelephones(array $telephones): void
     {
         $this->telephones()->delete();
-        $this->updateTelephones($telephones);
+        $this->storeTelephones($telephones);
     }
 }

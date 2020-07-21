@@ -22,6 +22,7 @@ return [
 
     'roles' => [
         'Super Administrador',
+        'Administrador',
         'Usuário'
     ],
 
@@ -31,7 +32,7 @@ return [
             'Listar', 'Visualizar'
         ],
         'Usuário' => [
-            'Listar', 'Visualizar', 'Editar'
+            'Listar', 'Visualizar', 'Editar', 'Deletar'
         ],
     ]
 ];

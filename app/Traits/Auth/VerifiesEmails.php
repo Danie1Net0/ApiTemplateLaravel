@@ -3,15 +3,17 @@
 namespace App\Traits\Auth;
 
 use App\Http\Requests\Auth\ResendVerificationRequest;
-use App\Http\Requests\Auth\VerificationRequest;
+use App\Http\Requests\Auth\EmailVerificationRequest;
+use App\Http\Requests\Auth\TokenValidationRequest;
 use App\Http\Resources\Users\UserResource;
 use App\Http\Resources\Validations\MessageResponseResource;
 use App\Notifications\Auth\EmailVerificationNotification;
 use App\Repositories\Users\UserRepositoryEloquent;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
-use Prettus\Validator\Exceptions\ValidatorException;
+use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Trait VerifiesEmails
@@ -36,24 +38,29 @@ trait VerifiesEmails
     }
 
     /**
-     * @param VerificationRequest $request
+     * @param EmailVerificationRequest $request
      * @return UserResource
-     * @throws ValidatorException
+     * @throws RepositoryException
      */
-    public function verifyEmail(VerificationRequest $request): UserResource
+    public function verifyEmail(EmailVerificationRequest $request): UserResource
     {
         $user = $this->userRepository->findWhere([
             'id' => $request->id,
             'activation_token' => $request->activation_token
         ])->first();
 
+        $attributes = [
+            'is_active' => true,
+            'activation_token' => null
+        ];
+
+        if ($request->password)
+            $attributes = array_merge($attributes, ['password' => Hash::make($request->password)]);
+
         if (is_null($user))
             throw new ModelNotFoundException('Usuário não encontrado.');
 
-        $this->userRepository->update([
-            'is_active' => true,
-            'activation_token' => null
-        ], $request->id);
+        $this->userRepository->update($attributes, $request->id);
 
         $token = $user->createToken('Personal Access Token');
 
@@ -64,10 +71,10 @@ trait VerifiesEmails
     }
 
     /**
-     * @param VerificationRequest $request
+     * @param TokenValidationRequest $request
      * @return MessageResponseResource
      */
-    public function verifyToken(VerificationRequest $request): MessageResponseResource
+    public function verifyToken(TokenValidationRequest $request): MessageResponseResource
     {
         $user = $this->userRepository->findWhere([
             'id' => $request->id,
@@ -77,7 +84,15 @@ trait VerifiesEmails
         if (is_null($user))
             throw new ModelNotFoundException('Token de verificação não encontrado.');
 
-        return (new MessageResponseResource(['success' => true, 'message' => 'Token de verificação validado com sucesso!']));
+        $message = [
+            'success' => true,
+            'message' => 'Token de verificação validado com sucesso!'
+        ];
+
+        if (is_null($user->password))
+            $message = array_merge($message, ['password_required' => true]);
+
+        return new MessageResponseResource($message);
     }
 
     /**

@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Requests\Users\User;
+namespace App\Http\Requests\Users\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 /**
  * Class UpdateUserRequest
- * @package App\Http\Requests\Users\User
+ * @package App\Http\Requests\Users\Users
  */
 class UpdateUserRequest extends FormRequest
 {
@@ -17,7 +19,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Auth::check() && Auth::user()->can('Editar Usuário');
     }
 
     /**
@@ -29,9 +31,10 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'max:20', 'confirmed'],
-            'telephones.*' => ['nullable', 'string', 'max:15']
+            'email' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
+            'telephones' => ['nullable', 'array'],
+            'telephones.*.number' => ['required', 'string', 'max:15'],
+            'telephones.*.type' => ['required', 'string', 'max:15']
         ];
     }
 }

@@ -60,3 +60,10 @@ Route::namespace('AccessControl')->group(function () {
     Route::resource('roles', 'RoleController');
     Route::resource('permissions', 'PermissionController')->only(['index', 'show']);
 });
+
+/**
+ * Users Routes
+ */
+Route::namespace('Users')->group(function () {
+    Route::resource('users', 'UserController');
+});

@@ -53,6 +53,13 @@ class User extends Authenticatable
     ];
 
     /**
+     * @var string[]
+     */
+    protected $with = [
+        'telephones', 'roles'
+    ];
+
+    /**
      * Relationship.
      *
      * @return MorphMany
