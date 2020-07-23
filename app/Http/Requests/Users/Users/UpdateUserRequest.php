@@ -34,7 +34,8 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
             'telephones' => ['nullable', 'array'],
             'telephones.*.number' => ['required', 'string', 'max:15'],
-            'telephones.*.type' => ['required', 'string', 'max:15']
+            'telephones.*.type' => ['required', 'string', 'max:15'],
+            'avatar' => ['nullable', 'image', 'max:2048']
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Users\Users;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Class IndexUserRequest
@@ -33,7 +34,10 @@ class IndexUserRequest extends FormRequest
             'search' => ['nullable', 'array'],
             'search.*' => ['required', 'min:2', 'max:3'],
             'columns' => ['nullable', 'array'],
-            'columns.*' => ['required', 'string'],
+            'columns.*' => ['required', 'string', function ($attribute, $value, $fail) {
+                if (!Schema::hasColumn('users', $value))
+                    $fail("Coluna $value não existe.");
+            }],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['required', 'string', 'exists:roles,name']
         ];

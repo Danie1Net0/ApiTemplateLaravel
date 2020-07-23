@@ -52,6 +52,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         $model->save();
         $this->resetModel();
 
+        $model->avatar()->create();
+
         if (isset($attributes['telephones']))
             $model->storeTelephones($attributes['telephones']);
 
@@ -87,14 +89,19 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
 
         event(new RepositoryEntityUpdating($this, $model));
 
+        if (isset($attributes['avatar']))
+            $model->updateImage('avatar', $attributes['avatar']);
+
+        if (isset($attributes['telephones']))
+            $model->updateTelephones($attributes['telephones']);
+
+        $model = $this->pushCriteria(new UpdateUserCriteria())->findOrFail($id);
+
         $model->fill($attributes);
         $model->save();
 
         $this->skipPresenter($temporarySkipPresenter);
         $this->resetModel();
-
-        if (isset($attributes['telephones']))
-            $model->updateTelephones($attributes['telephones']);
 
         event(new RepositoryEntityUpdated($this, $model));
 
