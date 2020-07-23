@@ -30,8 +30,15 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
+            'name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
+            'password' => ['nullable', 'confirmed'],
+            'previous_password' => [Rule::requiredIf(function () {
+                return $this->request->has('password');
+            }), function ($attribute, $value, $fail) {
+                if (!password_verify($value, auth()->user()->getAuthPassword()))
+                    $fail('A senha atual não corresponde com o valor informado.');
+            }],
             'telephones' => ['nullable', 'array'],
             'telephones.*.number' => ['required', 'string', 'max:15'],
             'telephones.*.type' => ['required', 'string', 'max:15'],

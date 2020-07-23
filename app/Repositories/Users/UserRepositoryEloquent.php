@@ -97,6 +97,9 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
 
         $model = $this->pushCriteria(new UpdateUserCriteria())->findOrFail($id);
 
+        if (isset($attributes['password']))
+            $attributes['password'] = Hash::make($attributes['password']);
+
         $model->fill($attributes);
         $model->save();
 
