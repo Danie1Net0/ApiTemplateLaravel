@@ -1,19 +1,17 @@
 <?php
 
-
 namespace App\Traits\Auth;
 
 use App\Http\Requests\Auth\ResendVerificationRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
-use App\Http\Resources\Validations\MessageResponseResource;
+use App\Http\Resources\Shared\MessageResponseResource;
 use App\Notifications\Auth\ResetPasswordNotification;
 use App\Repositories\Users\UserRepositoryEloquent;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
-use Prettus\Validator\Exceptions\ValidatorException;
+use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Trait ResetPasswords
@@ -62,7 +60,7 @@ trait ResetPasswords
     /**
      * @param ResetPasswordRequest $request
      * @return MessageResponseResource
-     * @throws AuthorizationException|ValidatorException
+     * @throws AuthorizationException|RepositoryException
      */
     public function reset(ResetPasswordRequest $request): MessageResponseResource
     {
@@ -71,7 +69,7 @@ trait ResetPasswords
         if (Carbon::parse($user->passwordReset->updated_at)->addMinutes(60)->isPast())
             throw new AuthorizationException('Token de recuperação de senha expirado ou inválido.');
 
-        $this->userRepository->update(['password' => Hash::make($request->password)], $request->user_id);
+        $this->userRepository->update($request->only('password'), $request->user_id);
         $user->passwordReset()->delete();
 
         return new MessageResponseResource(['success' => true, 'message' => 'Senha recuperada com sucesso!']);

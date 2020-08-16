@@ -27,8 +27,8 @@ Route::prefix('auth')->namespace('Auth')->group(function () {
      * Password Reset Routes
      */
     Route::prefix('password')->group(function () {
-        Route::get('', 'ResetPasswordController@request');
-        Route::post('reset', 'ResetPasswordController@reset');
+        Route::post('request', 'ResetPasswordController@request');
+        Route::put('reset', 'ResetPasswordController@reset');
     });
 });
 
@@ -39,9 +39,7 @@ Route::prefix('registration')->group(function () {
     /**
      * Registration Routes
      */
-    Route::namespace('Users')->group(function () {
-        Route::post('users', 'UserController@store');
-    });
+    Route::post('users', 'Users\UserController@store');
 
     /**
      * Verification Routes

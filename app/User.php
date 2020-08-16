@@ -3,10 +3,10 @@
 namespace App;
 
 use App\Models\Auth\PasswordReset;
-use App\Models\Images\Image;
-use App\Models\Telephones\Telephone;
-use App\Traits\Images\HasImages;
-use App\Traits\Telephones\HasTelephones;
+use App\Models\Shared\Image;
+use App\Models\Shared\Telephone;
+use App\Traits\Shared\HasImages;
+use App\Traits\Shared\HasTelephones;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -42,6 +42,22 @@ class User extends Authenticatable
     /**
      * @var string[]
      */
+    protected $visible = [
+        'id',
+        'name',
+        'email',
+        'password',
+        'is_active',
+        'telephones',
+        'roles',
+        'permissions',
+        'avatar',
+        'is_active',
+    ];
+
+    /**
+     * @var string[]
+     */
     protected $hidden = [
         'password',
         'activation_token',
@@ -52,15 +68,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'is_active' => 'bool',
-    ];
-
-    /**
-     * @var string[]
-     */
-    protected $with = [
-        'telephones',
-        'roles',
-        'avatar'
     ];
 
     /**

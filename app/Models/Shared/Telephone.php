@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\Telephones;
+namespace App\Models\Shared;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Class Telephone
- * @package App\Models\Telephones
+ * @package App\Models\Shared
  */
 class Telephone extends Model
 {
@@ -17,6 +17,15 @@ class Telephone extends Model
     protected $fillable = [
         'number',
         'type'
+    ];
+
+    /**
+     * @var string[]
+     */
+    protected $visible = [
+        'id',
+        'number',
+        'type',
     ];
 
     /**

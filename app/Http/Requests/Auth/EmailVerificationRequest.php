@@ -34,7 +34,8 @@ class EmailVerificationRequest extends FormRequest
             'id' => ['required', 'integer', 'exists:users'],
             'activation_token' => ['required', 'string', 'exists:users'],
             'password' => [Rule::requiredIf(function () use ($userRepository) {
-                return is_null($userRepository->find($this->request->get('id'))->password);
+                $user = $userRepository->findWhere(['id' => $this->request->get('id')])->first();
+                return $user ? is_null($user->password) : false;
             }), 'string', 'max:20', 'confirmed'],
         ];
     }

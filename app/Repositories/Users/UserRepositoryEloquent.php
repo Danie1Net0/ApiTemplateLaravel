@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Eloquent\BaseRepository;
+use Prettus\Repository\Events\RepositoryEntityDeleted;
+use Prettus\Repository\Events\RepositoryEntityDeleting;
 use Prettus\Repository\Events\RepositoryEntityUpdated;
 use Prettus\Repository\Events\RepositoryEntityUpdating;
 use Prettus\Repository\Exceptions\RepositoryException;
@@ -58,10 +60,13 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $model->storeTelephones($attributes['telephones']);
 
         if (Auth::check() && Auth::user()->hasRole('Super Administrador|Administrador')) {
-            if (isset($attributes['role']))
-                $model->assignRole($attributes['role']);
+            if (isset($attributes['roles']))
+                $model->assignRole($attributes['roles']);
             else
                 $model->assignRole('Usuário');
+
+            if (isset($attributes['permissions']))
+                $model->syncPermissions($attributes['permissions']);
         } else {
             $model->assignRole('Usuário');
         }
@@ -100,8 +105,19 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         if (isset($attributes['password']))
             $attributes['password'] = Hash::make($attributes['password']);
 
+        if (Auth::check() && !Auth::user()->hasRole('Super Administrador|Administrador') && isset($attributes['is_active']))
+            unset($attributes['is_active']);
+
         $model->fill($attributes);
         $model->save();
+
+        if (Auth::check() && Auth::user()->hasRole('Super Administrador|Administrador')) {
+            if (isset($attributes['roles']))
+                $model->syncRoles($attributes['roles']);
+
+            if (isset($attributes['permissions']))
+                $model->syncPermissions($attributes['permissions']);
+        }
 
         $this->skipPresenter($temporarySkipPresenter);
         $this->resetModel();
@@ -109,6 +125,35 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         event(new RepositoryEntityUpdated($this, $model));
 
         return $this->parserResult($model);
+    }
+
+    /**
+     * @param $id
+     * @return int
+     * @throws RepositoryException
+     */
+    public function delete($id)
+    {
+        $this->applyScope();
+
+        $temporarySkipPresenter = $this->skipPresenter;
+        $this->skipPresenter(true);
+
+        $model = $this->find($id);
+        $originalModel = clone $model;
+
+        $this->skipPresenter($temporarySkipPresenter);
+        $this->resetModel();
+
+        event(new RepositoryEntityDeleting($this, $model));
+
+        $model->deleteImage('avatar');
+        $model->telephones()->delete();
+        $deleted = $model->delete();
+
+        event(new RepositoryEntityDeleted($this, $originalModel));
+
+        return $deleted;
     }
 
     /**

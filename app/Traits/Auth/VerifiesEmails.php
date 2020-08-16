@@ -6,7 +6,7 @@ use App\Http\Requests\Auth\ResendVerificationRequest;
 use App\Http\Requests\Auth\EmailVerificationRequest;
 use App\Http\Requests\Auth\TokenValidationRequest;
 use App\Http\Resources\Users\UserResource;
-use App\Http\Resources\Validations\MessageResponseResource;
+use App\Http\Resources\Shared\MessageResponseResource;
 use App\Notifications\Auth\EmailVerificationNotification;
 use App\Repositories\Users\UserRepositoryEloquent;
 use Carbon\Carbon;
@@ -64,10 +64,14 @@ trait VerifiesEmails
 
         $token = $user->createToken('Personal Access Token');
 
-        return (new UserResource($user))->additional(['meta' => [
-            'token' => $token->accessToken,
-            'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
-        ]]);
+        return (new UserResource($user))->additional([
+            'data' => [
+                'message' => 'Cadastro finalizado com sucesso!'
+            ],
+            'meta' => [
+                'token' => $token->accessToken,
+                'expires_at' => Carbon::parse($token->token->expires_at)->toDateTimeString()
+            ]]);
     }
 
     /**

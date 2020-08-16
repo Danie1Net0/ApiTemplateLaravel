@@ -8,7 +8,7 @@ use App\Http\Requests\AccessControl\Roles\CreateRoleRequest;
 use App\Http\Requests\AccessControl\Roles\IndexRoleRequest;
 use App\Http\Requests\AccessControl\Roles\UpdateRoleRequest;
 use App\Http\Resources\AccessControl\RoleResource;
-use App\Http\Resources\Validations\MessageResponseResource;
+use App\Http\Resources\Shared\MessageResponseResource;
 use App\Repositories\AccessControl\RoleRepositoryEloquent;
 use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -63,7 +63,7 @@ class RoleController extends Controller
     public function store(CreateRoleRequest $request): RoleResource
     {
         $role = $this->roleRepository->create($request->all());
-        return new RoleResource($role);
+        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões cadastrado com sucesso!']]);
     }
 
     /**
@@ -85,7 +85,7 @@ class RoleController extends Controller
     public function update(UpdateRoleRequest $request, int $id)
     {
         $role = $this->roleRepository->update($request->all(), $id);
-        return new RoleResource($role);
+        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões atualizado com sucesso!']]);
     }
 
     /**
@@ -97,7 +97,7 @@ class RoleController extends Controller
     {
         try {
             $this->roleRepository->delete($id);
-            return new MessageResponseResource(['success' => true, 'message' => 'Função removida com successo!']);
+            return new MessageResponseResource(['success' => true, 'message' => 'Grupo de Permissões removido com successo!']);
         } catch (Exception $exception) {
             throw new DeleteResourceException($exception->getMessage());
         }

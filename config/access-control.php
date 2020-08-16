@@ -23,16 +23,14 @@ return [
     'roles' => [
         'Super Administrador',
         'Administrador',
-        'Usuário'
+        'Usuário',
     ],
 
     'permissions' => [
         'Função',
+        'Usuário',
         'Permissão' => [
             'Listar', 'Visualizar'
-        ],
-        'Usuário' => [
-            'Listar', 'Visualizar', 'Editar', 'Deletar'
         ],
     ]
 ];

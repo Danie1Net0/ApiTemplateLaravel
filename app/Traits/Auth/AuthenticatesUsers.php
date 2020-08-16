@@ -4,7 +4,8 @@ namespace App\Traits\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Users\UserResource;
-use App\Http\Resources\Validations\MessageResponseResource;
+use App\Http\Resources\Shared\MessageResponseResource;
+use App\Repositories\Users\UserRepositoryEloquent;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,19 +21,24 @@ trait AuthenticatesUsers
 {
     /**
      * @param LoginRequest $request
+     * @param UserRepositoryEloquent $userRepository
      * @return JsonResponse|object
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, UserRepositoryEloquent $userRepository)
     {
         $credentials = $request->only('email', 'password');
+        $attempt = Auth::guard('web')->attempt($credentials);
 
-        if (!Auth::guard('web')->attempt($credentials))
+        if (!$attempt || ($attempt && !Auth::guard('web')->user()->is_active && is_null(Auth::guard('web')->user()->activation_token)))
             return (new MessageResponseResource(['success' => false, 'message' => 'E-mail ou senha inválidos.']))
                 ->response()
                 ->setStatusCode(Response::HTTP_UNAUTHORIZED);
 
         if (Auth::guard('web')->user()->is_active) {
-            $user = Auth::guard('web')->user();
+            $user = $userRepository
+                ->with(['avatar', 'telephones', 'roles'])
+                ->find(Auth::guard('web')->id());
+
             $token = $user->createToken('Personal Access Token');
 
             return (new UserResource($user))->additional(['meta' => [

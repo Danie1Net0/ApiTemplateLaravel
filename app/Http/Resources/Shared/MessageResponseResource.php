@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Resources\Validations;
+namespace App\Http\Resources\Shared;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Class MessageResponseResource
- * @package App\Http\Resources\Validations
+ * @package App\Http\Resources\Shared
  */
 class MessageResponseResource extends JsonResource
 {

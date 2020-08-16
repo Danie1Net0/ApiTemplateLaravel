@@ -4,6 +4,7 @@ namespace App\Http\Requests\AccessControl\Roles;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 /**
  * Class UpdateRoleRequest
@@ -29,7 +30,7 @@ class UpdateRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'unique:roles'],
+            'name' => ['required', 'string', Rule::unique('roles')->ignore($this->role)],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['required', 'integer', 'exists:permissions,id']
         ];

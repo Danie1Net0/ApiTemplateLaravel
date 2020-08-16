@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Http\Resources\Validations\MessageResponseResource;
+use App\Http\Resources\Shared\MessageResponseResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -77,7 +78,7 @@ class Handler extends ExceptionHandler
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
 
-        if ($exception instanceof UnauthorizedException)
+        if ($exception instanceof UnauthorizedException || $exception instanceof AccessDeniedHttpException)
             return (new MessageResponseResource(['success' => false, 'message' => 'O usuário não tem permissões para realizar essa operação.']))
                 ->response()
                 ->setStatusCode(Response::HTTP_FORBIDDEN);

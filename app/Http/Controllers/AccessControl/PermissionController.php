@@ -39,7 +39,9 @@ class PermissionController extends Controller
     {
         $permissions = $this->permissionRepository->scopeQuery(function ($query) use ($request) {
             return $query->where($request->search ?? []);
-        })->paginate($request->paginate ?? 10);
+        });
+        
+        $permissions = $request->paginate ? $permissions->paginate($request->paginate) : $permissions->all();
 
         return PermissionResource::collection($permissions);
     }

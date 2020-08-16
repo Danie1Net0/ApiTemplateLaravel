@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Requests\Users\Users;
+namespace App\Http\Requests\Users;
 
+use App\Rules\Shared\CheckIfColumnExistsRule;
+use App\Rules\Shared\CheckIfRelationshipExistsRule;
+use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class IndexUserRequest
- * @package App\Http\Requests\Users\Users
+ * @package App\Http\Requests\Users
  */
 class IndexUserRequest extends FormRequest
 {
@@ -34,10 +36,9 @@ class IndexUserRequest extends FormRequest
             'search' => ['nullable', 'array'],
             'search.*' => ['required', 'min:2', 'max:3'],
             'columns' => ['nullable', 'array'],
-            'columns.*' => ['required', 'string', function ($attribute, $value, $fail) {
-                if (!Schema::hasColumn('users', $value))
-                    $fail("Coluna $value não existe.");
-            }],
+            'columns.*' => ['required', 'string', new CheckIfColumnExistsRule('users')],
+            'relationships' => ['nullable', 'array'],
+            'relationships.*' => ['required', 'string', new CheckIfRelationshipExistsRule(new User())],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['required', 'string', 'exists:roles,name']
         ];
