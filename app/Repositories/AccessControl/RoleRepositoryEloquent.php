@@ -2,6 +2,7 @@
 
 namespace App\Repositories\AccessControl;
 
+use App\Models\AccessControl\Role;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -14,7 +15,6 @@ use Prettus\Repository\Events\RepositoryEntityDeleting;
 use Prettus\Repository\Events\RepositoryEntityUpdated;
 use Prettus\Repository\Events\RepositoryEntityUpdating;
 use Prettus\Repository\Exceptions\RepositoryException;
-use Spatie\Permission\Models\Role;
 use Exception;
 
 /**

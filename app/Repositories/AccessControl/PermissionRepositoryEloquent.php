@@ -2,10 +2,10 @@
 
 namespace App\Repositories\AccessControl;
 
+use App\Models\AccessControl\Permission;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\Contracts\AccessControl\PermissionRepository;
-use Spatie\Permission\Models\Permission;
 
 /**
  * Class PermissionRepositoryEloquent.
