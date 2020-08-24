@@ -55,7 +55,7 @@ trait VerifiesEmails
         ];
 
         if ($request->password)
-            $attributes = array_merge($attributes, ['password' => Hash::make($request->password)]);
+            $attributes = array_merge($attributes, ['password' => $request->password]);
 
         if (is_null($user))
             throw new ModelNotFoundException('Usuário não encontrado.');
