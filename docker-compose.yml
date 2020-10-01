@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    image: ambientum/php:7.4-nginx
+    container_name: base_api
+    restart: always
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 8008:8080
+      - 450:443
+    networks:
+      - base_network
+    depends_on:
+      - pgsql
+
+  pgsql:
+    image: mdillon/postgis
+    container_name: base_db
+    restart: always
+    networks:
+      - base_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+    env_file:
+      - .db.env
+
+volumes:
+  pgdata:
+
+networks:
+  base_network:
+    driver: bridge
