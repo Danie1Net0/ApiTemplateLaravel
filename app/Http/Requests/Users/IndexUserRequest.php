@@ -21,7 +21,7 @@ class IndexUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Listar Usuário');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**

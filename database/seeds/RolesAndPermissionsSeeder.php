@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -14,7 +15,7 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run()
     {
         $this->createRoles(config('access-control.roles'));
-        $this->createPermissions(config('access-control.permissions'));
+        $this->createPermissions();
     }
 
     /**
@@ -32,29 +33,16 @@ class RolesAndPermissionsSeeder extends Seeder
     }
 
     /**
-     * Cria "permissions" a partir dos dados do arquivo config/access-control.php
-     *
-     * @param array $permissions
+     * Cria "permissions" a partir das rotas com prefixo "api".
      */
-    private function createPermissions(array $permissions): void
+    private function createPermissions(): void
     {
-        $defaultPermissions = ['Listar', 'Criar', 'Visualizar', 'Editar', 'Deletar'];
+        foreach (Route::getRoutes() as $route) {
+            if ($route->getPrefix() === 'api') {
+                $permission = $route->getName();
 
-        foreach ($permissions as $key => $value) {
-            // Se for um array associativo, cria apenas as permissões específicas.
-            if (is_array($value)) {
-                foreach ($value as $permission) {
-                    if (is_null(Permission::where('name', "{$permission} {$key}")->first())) {
-                        Permission::create(['name' => "{$permission} {$key}"]);
-                    }
-                }
-                break;
-            }
-
-            // Senão, cria todas as permissões (conforme o array $permissions).
-            foreach ($defaultPermissions as $permission) {
-                if (is_null(Permission::where('name', "{$permission} {$value}")->first())) {
-                    Permission::create(['name' => "{$permission} {$value}"]);
+                if (is_null(Permission::where('name', $permission)->first())) {
+                    Permission::create(['name' => $permission]);
                 }
             }
         }

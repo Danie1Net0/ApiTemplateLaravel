@@ -18,7 +18,7 @@ class IndexPermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Listar Permissão');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**

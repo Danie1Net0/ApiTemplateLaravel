@@ -18,7 +18,7 @@ class IndexRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Listar Função');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**

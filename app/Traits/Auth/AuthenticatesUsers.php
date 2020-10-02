@@ -37,9 +37,10 @@ trait AuthenticatesUsers
                 ->with(['avatar', 'telephones', 'roles'])
                 ->find(Auth::id());
 
-            return (new UserResource($user))->additional(['meta' => [
-                'token' => $user->createToken('Personal Token: User ' . Auth::id())->plainTextToken
-            ]]);
+            $tokenName = 'Personal Token ' . Auth::id();
+            $token = $user->createToken($tokenName);
+
+            return (new UserResource($user))->additional(['meta' => ['token' => $token->plainTextToken]]);
         }
 
         return (new MessageResponseResource([

@@ -6,17 +6,8 @@ return [
     |--------------------------------------------------------------------------
     | Controle de Acesso
     |--------------------------------------------------------------------------
-    |
-    | Os recursos inseridos no vetor serão transformados em permissões 'listar',
-    | 'criar', 'visualizar', 'editar' e 'deletar'. Ex: a partir do recurso
-    | 'usuario', serão criadas as permissões 'listar-usuario', 'criar-usuario',
-    | 'visualizar-usuario', 'editar-usuario' e 'deletar-usuario'.
-    |
-    | Caso o array seja associativo, serão criadas apenas as permissões contidas
-    | no array. Ex: 'usuario' => ['listar', 'visualizar'] criará as permissões
-    | 'listar-usuario' e 'visualizar-usuario'.
-    |
-    | As permissões são efetivamente criadas no seeder RolesAndPermissionsSeeder.
+    | Define os grupos de acesso ao sistema. As funções (roles) são
+    | efetivamente criadas no seeder RolesAndPermissionsSeeder.
     |
     */
 
@@ -25,12 +16,4 @@ return [
         'Administrador',
         'Usuário',
     ],
-
-    'permissions' => [
-        'Função',
-        'Usuário',
-        'Permissão' => [
-            'Listar', 'Visualizar'
-        ],
-    ]
 ];

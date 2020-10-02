@@ -21,7 +21,7 @@ class ShowUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Visualizar Usuário');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**

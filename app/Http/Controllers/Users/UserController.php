@@ -30,12 +30,7 @@ class UserController extends Controller
      */
     public function __construct(UserRepositoryEloquent $userRepository)
     {
-        $this->middleware('auth:sanctum');
-        $this->middleware('permission:Listar Usuário')->only('index');
-        $this->middleware('permission:Visualizar Usuário')->only('show');
-        $this->middleware('permission:Editar Usuário')->only('update');
-        $this->middleware('permission:Deletar Usuário')->only('destroy');
-
+        $this->middleware(['auth:sanctum', 'verify_permission'])->except('store');
         $this->userRepository = $userRepository;
     }
 
