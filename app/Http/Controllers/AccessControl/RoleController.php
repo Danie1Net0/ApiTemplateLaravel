@@ -23,7 +23,7 @@ class RoleController extends Controller
     /**
      * @var RoleRepositoryEloquent
      */
-    private $roleRepository;
+    private RoleRepositoryEloquent $roleRepository;
 
     /**
      * RoleController constructor.
@@ -31,11 +31,12 @@ class RoleController extends Controller
      */
     public function __construct(RoleRepositoryEloquent $roleRepository)
     {
-        $this->middleware(['auth:api', 'permission:Listar Função'])->only('index');
-        $this->middleware(['auth:api', 'permission:Criar Função'])->only('store');
-        $this->middleware(['auth:api', 'permission:Visualizar Função'])->only('show');
-        $this->middleware(['auth:api', 'permission:Editar Função'])->only('update');
-        $this->middleware(['auth:api', 'permission:Deletar Função'])->only('destroy');
+        $this->middleware('auth:api');
+        $this->middleware('permission:Listar Função')->only('index');
+        $this->middleware('permission:Criar Função')->only('store');
+        $this->middleware('permission:Visualizar Função')->only('show');
+        $this->middleware('permission:Editar Função')->only('update');
+        $this->middleware('permission:Deletar Função')->only('destroy');
 
         $this->roleRepository = $roleRepository;
     }

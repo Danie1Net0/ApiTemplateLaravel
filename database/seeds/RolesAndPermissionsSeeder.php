@@ -13,26 +13,49 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $roles = config('access-control.roles');
+        $this->createRoles(config('access-control.roles'));
+        $this->createPermissions(config('access-control.permissions'));
+    }
 
-        foreach ($roles as $role)
-            if (is_null(Role::where('name', $role)->first()))
-                Role::create(['name' => $role, 'guard_name' => 'api']);
+    /**
+     * Cria "roles" a partir dos dados do arquivo config/access-control.php
+     *
+     * @param array $roles
+     */
+    private function createRoles(array $roles): void
+    {
+        foreach ($roles as $role) {
+            if (is_null(Role::where('name', $role)->first())) {
+                Role::create(['name' => $role]);
+            }
+        }
+    }
 
-        $permissions = config('access-control.permissions');
+    /**
+     * Cria "permissions" a partir dos dados do arquivo config/access-control.php
+     *
+     * @param array $permissions
+     */
+    private function createPermissions(array $permissions): void
+    {
         $defaultPermissions = ['Listar', 'Criar', 'Visualizar', 'Editar', 'Deletar'];
 
         foreach ($permissions as $key => $value) {
+            // Se for um array associativo, cria apenas as permissões específicas.
             if (is_array($value)) {
-                // Se for um array associativo, cria apenas as permissões específicas.
-                foreach ($value as $permission)
-                    if (is_null(Permission::where('name', "{$permission} {$key}")->first()))
-                        Permission::create(['name' => "{$permission} {$key}", 'guard_name' => 'api']);
-            } else {
-                // Senão, cria todas as permissões (conforme o array $permissions).
-                foreach ($defaultPermissions as $permission)
-                    if (is_null(Permission::where('name', "{$permission} {$value}")->first()))
-                        Permission::create(['name' => "{$permission} {$value}", 'guard_name' => 'api']);
+                foreach ($value as $permission) {
+                    if (is_null(Permission::where('name', "{$permission} {$key}")->first())) {
+                        Permission::create(['name' => "{$permission} {$key}"]);
+                    }
+                }
+                break;
+            }
+
+            // Senão, cria todas as permissões (conforme o array $permissions).
+            foreach ($defaultPermissions as $permission) {
+                if (is_null(Permission::where('name', "{$permission} {$value}")->first())) {
+                    Permission::create(['name' => "{$permission} {$value}"]);
+                }
             }
         }
     }

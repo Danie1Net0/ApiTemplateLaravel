@@ -22,7 +22,7 @@ class UserController extends Controller
     /**
      * @var UserRepositoryEloquent
      */
-    private $userRepository;
+    private UserRepositoryEloquent $userRepository;
 
     /**
      * UserController constructor.
@@ -30,10 +30,11 @@ class UserController extends Controller
      */
     public function __construct(UserRepositoryEloquent $userRepository)
     {
-        $this->middleware(['auth:api', 'permission:Listar Usuário'])->only('index');
-        $this->middleware(['auth:api', 'permission:Visualizar Usuário'])->only('show');
-        $this->middleware(['auth:api', 'permission:Editar Usuário'])->only('update');
-        $this->middleware(['auth:api', 'permission:Deletar Usuário'])->only('destroy');
+        $this->middleware('auth:sanctum');
+        $this->middleware('permission:Listar Usuário')->only('index');
+        $this->middleware('permission:Visualizar Usuário')->only('show');
+        $this->middleware('permission:Editar Usuário')->only('update');
+        $this->middleware('permission:Deletar Usuário')->only('destroy');
 
         $this->userRepository = $userRepository;
     }

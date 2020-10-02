@@ -55,13 +55,13 @@ Route::prefix('registration')->group(function () {
  * Access Control Routes
  */
 Route::namespace('AccessControl')->group(function () {
-    Route::resource('roles', 'RoleController');
-    Route::resource('permissions', 'PermissionController')->only(['index', 'show']);
+    Route::apiResource('roles', 'RoleController');
+    Route::apiResource('permissions', 'PermissionController')->only(['index', 'show']);
 });
 
 /**
  * Users Routes
  */
 Route::namespace('Users')->group(function () {
-    Route::resource('users', 'UserController');
+    Route::apiResource('users', 'UserController');
 });

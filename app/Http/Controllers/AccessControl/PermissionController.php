@@ -17,7 +17,7 @@ class PermissionController extends Controller
     /**
      * @var PermissionRepositoryEloquent
      */
-    private $permissionRepository;
+    private PermissionRepositoryEloquent $permissionRepository;
 
     /**
      * PermissionController constructor.
@@ -25,8 +25,9 @@ class PermissionController extends Controller
      */
     public function __construct(PermissionRepositoryEloquent $permissionRepository)
     {
-        $this->middleware(['auth:api', 'permission:listar-permissao'])->only('index');
-        $this->middleware(['auth:api', 'permission:visualizar-permissao'])->only('show');
+        $this->middleware('auth:sanctum');
+        $this->middleware('permission:listar-permissao')->only('index');
+        $this->middleware('permission:visualizar-permissao')->only('show');
 
         $this->permissionRepository = $permissionRepository;
     }
@@ -40,7 +41,7 @@ class PermissionController extends Controller
         $permissions = $this->permissionRepository->scopeQuery(function ($query) use ($request) {
             return $query->where($request->search ?? []);
         });
-        
+
         $permissions = $request->paginate ? $permissions->paginate($request->paginate) : $permissions->all();
 
         return PermissionResource::collection($permissions);
