@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
  * Class VerificationRequest
  * @package App\Http\Requests\Auth
  */
-class EmailVerificationRequest extends FormRequest
+class ConfirmationRegistrationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,9 +32,9 @@ class EmailVerificationRequest extends FormRequest
     {
         return [
             'id' => ['required', 'integer', 'exists:users'],
-            'activation_token' => ['required', 'string', 'exists:users'],
+            'token' => ['required', 'string', 'min:6', 'max:6', 'exists:users,confirmation_token'],
             'password' => [Rule::requiredIf(function () use ($userRepository) {
-                $user = $userRepository->findWhere(['id' => $this->request->get('id')])->first();
+                $user = $userRepository->find($this->get('id'));
                 return $user ? is_null($user->password) : false;
             }), 'string', 'max:20', 'confirmed'],
         ];

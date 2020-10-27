@@ -31,6 +31,7 @@ class UserController extends Controller
     public function __construct(UserRepositoryEloquent $userRepository)
     {
         $this->middleware(['auth:sanctum', 'verify_permission'])->except('store');
+
         $this->userRepository = $userRepository;
     }
 
@@ -50,18 +51,17 @@ class UserController extends Controller
             $users->paginate($request->paginate, $request->columns ?? ['*']) :
             $users->get($request->columns ?? ['*']);
 
-        return UserResource::collection($users);
+        return UserResource::collection($users)->additional(['meta' => 'Usuários recuperados com sucesso!']);
     }
 
     /**
      * @param CreateUserRequest $request
      * @return UserResource
-     * @throws RepositoryException
      */
     public function store(CreateUserRequest $request): UserResource
     {
         $user = $this->userRepository->create($request->all());
-        return (new UserResource($user))->additional(['data' => ['message' => 'Usuário cadastrado com sucesso!']]);
+        return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário cadastrado com sucesso!']]);
     }
 
     /**
@@ -75,23 +75,21 @@ class UserController extends Controller
             ->with($request->relationships ?? ['avatar', 'telephones', 'roles', 'permissions'])
             ->find($id, $request->columns ?? ['*']);
 
-        return new UserResource($user);
+        return (new UserResource($user))->additional(['meta' => 'Usuário recuperado com sucesso!']);
     }
 
     /**
      * @param UpdateUserRequest $request
      * @param int $id
      * @return UserResource
-     * @throws RepositoryException
      */
     public function update(UpdateUserRequest $request, int $id)
     {
-        $user = $this
-            ->userRepository
+        $user = $this->userRepository
             ->with($request->relationships ?? ['avatar', 'telephones', 'roles'])
             ->update($request->all(), $id);
 
-        return (new UserResource($user))->additional(['data' => ['message' => 'Usuário atualizado com sucesso!']]);
+        return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário atualizado com sucesso!']]);
     }
 
     /**
@@ -102,6 +100,6 @@ class UserController extends Controller
     public function destroy(int $id): MessageResponseResource
     {
         $this->userRepository->delete($id);
-        return new MessageResponseResource(['success' => true, 'message' => 'Usuário removido com sucesso!']);
+        return new MessageResponseResource('Usuário removido com sucesso!');
     }
 }

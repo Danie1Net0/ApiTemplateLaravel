@@ -19,7 +19,7 @@ class SuperAdminSeeder extends Seeder
                 'email' => 'admin@admin.com',
                 'password' => Hash::make('superadmin'),
                 'is_active' => true
-            ])->assignRole('Super Administrador');
+            ])->assignRole('Super Administrador')->avatar()->create();
         }
     }
 }

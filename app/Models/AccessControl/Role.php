@@ -14,15 +14,6 @@ class Role extends SpatieRole
      * @var string[]
      */
     protected $visible = [
-        'id',
         'name',
-        'permissions',
-    ];
-
-    /**
-     * @var string[]
-     */
-    protected $with = [
-        'permissions',
     ];
 }

@@ -7,6 +7,7 @@ use App\Models\Shared\Image;
 use App\Models\Shared\Telephone;
 use App\Traits\Shared\HasImages;
 use App\Traits\Shared\HasTelephones;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -24,6 +25,11 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable, HasRoles, HasTelephones, HasImages;
 
     /**
+     * @var string
+     */
+    protected $guard_name = 'api';
+
+    /**
      * @var string[]
      */
     protected $fillable = [
@@ -31,7 +37,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_active',
-        'activation_token',
+        'confirmation_token',
     ];
 
     /**
@@ -46,7 +52,7 @@ class User extends Authenticatable
         'telephones',
         'roles',
         'permissions',
-        'avatar',
+        'avatar_url',
         'is_active',
     ];
 
@@ -55,7 +61,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'activation_token',
+        'confirmation_token',
     ];
 
     /**
@@ -63,6 +69,13 @@ class User extends Authenticatable
      */
     protected $casts = [
         'is_active' => 'bool',
+    ];
+
+    /**
+     * @var string[]
+     */
+    protected $appends = [
+        'avatar_url',
     ];
 
     /**
@@ -93,5 +106,15 @@ class User extends Authenticatable
     public function passwordReset(): HasOne
     {
         return $this->hasOne(PasswordReset::class);
+    }
+
+    /**
+     * Accessor.
+     *
+     * @return string
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar()->first()->path;
     }
 }

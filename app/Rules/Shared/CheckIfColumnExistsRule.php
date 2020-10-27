@@ -14,12 +14,12 @@ class CheckIfColumnExistsRule implements Rule
     /**
      * @var string
      */
-    private $tableName;
+    private string $tableName;
 
     /**
      * @var string
      */
-    private $value;
+    private string $value;
 
     /**
      * Create a new rule instance.
@@ -34,8 +34,8 @@ class CheckIfColumnExistsRule implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)

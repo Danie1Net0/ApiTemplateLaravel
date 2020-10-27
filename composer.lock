@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e3f3430ce3e042fa8b67e3a0b381df11",
+    "content-hash": "15240078878c7fb0a6fe07e9ff06f89e",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -112,33 +112,31 @@
         },
         {
             "name": "darkaonline/l5-swagger",
-            "version": "7.0.1",
+            "version": "8.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DarkaOnLine/L5-Swagger.git",
-                "reference": "64e9cfaa0065f1c9d9b85c203a1de893698c7336"
+                "reference": "9b900e353503237ed983cae17277ff12fc1aaaf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/64e9cfaa0065f1c9d9b85c203a1de893698c7336",
-                "reference": "64e9cfaa0065f1c9d9b85c203a1de893698c7336",
+                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/9b900e353503237ed983cae17277ff12fc1aaaf9",
+                "reference": "9b900e353503237ed983cae17277ff12fc1aaaf9",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^7.0",
+                "ext-json": "*",
+                "laravel/framework": "^8.0 || ^7.0",
                 "php": "^7.2",
                 "swagger-api/swagger-ui": "^3.0",
                 "symfony/yaml": "^5.0",
-                "zircote/swagger-php": "~2.0|3.*"
+                "zircote/swagger-php": "3.*"
             },
             "require-dev": {
                 "mockery/mockery": "1.*",
-                "orchestra/testbench": "5.*",
+                "orchestra/testbench": "6.* || 5.*",
                 "php-coveralls/php-coveralls": "^2.0",
                 "phpunit/phpunit": "8.*"
-            },
-            "suggest": {
-                "zircote/swagger-php:~2.0": "!!! Require Swagger-PHP ~2.0 for @SWG annotations support !!!"
             },
             "type": "library",
             "extra": {
@@ -181,7 +179,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-18T06:29:25+00:00"
+            "time": "2020-09-09T05:12:50+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1399,6 +1397,46 @@
                 }
             ],
             "time": "2020-09-21T18:10:53+00:00"
+        },
+        {
+            "name": "lucascudo/laravel-pt-br-localization",
+            "version": "v1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucascudo/laravel-pt-BR-localization.git",
+                "reference": "19f60fa3dc7246ff20a478d79da3015a8e03c86b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucascudo/laravel-pt-BR-localization/zipball/19f60fa3dc7246ff20a478d79da3015a8e03c86b",
+                "reference": "19f60fa3dc7246ff20a478d79da3015a8e03c86b",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Lucascudo\\LaravelPtBRLocalization\\LaravelPtBRLocalizationServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lucascudo\\LaravelPtBRLocalization\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Cascudo",
+                    "email": "lucas.sisau@gmail.com"
+                }
+            ],
+            "description": "Arquivos de linguagem em Português do Brasil (pt-BR) para Laravel >= 5.6",
+            "time": "2020-09-04T09:02:44+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -7233,7 +7271,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2.5"
+        "php": "^7.4"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"

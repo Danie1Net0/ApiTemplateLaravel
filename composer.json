@@ -9,13 +9,14 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
-        "darkaonline/l5-swagger": "^7.0",
+        "darkaonline/l5-swagger": "^8.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^7.0",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.0",
+        "lucascudo/laravel-pt-br-localization": "^1.1",
         "prettus/l5-repository": "^2.6",
         "spatie/laravel-permission": "^3.13"
     },
@@ -43,6 +44,9 @@
         "classmap": [
             "database/seeds",
             "database/factories"
+        ],
+        "files":  [
+            "app/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

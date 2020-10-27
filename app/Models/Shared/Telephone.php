@@ -16,14 +16,13 @@ class Telephone extends Model
      */
     protected $fillable = [
         'number',
-        'type'
+        'type',
     ];
 
     /**
      * @var string[]
      */
     protected $visible = [
-        'id',
         'number',
         'type',
     ];

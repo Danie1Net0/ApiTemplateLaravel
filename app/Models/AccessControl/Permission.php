@@ -14,7 +14,6 @@ class Permission extends SpatiePermission
      * @var string[]
      */
     protected $visible = [
-        'id',
         'name',
     ];
 }

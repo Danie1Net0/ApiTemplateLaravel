@@ -61,25 +61,25 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof DeleteResourceException)
-            return new MessageResponseResource(['success' => false, 'message' => $exception->getMessage()]);
+            return new MessageResponseResource($exception->getMessage());
 
         if ($exception instanceof ValidationException)
-            return (new MessageResponseResource(['success' => false, 'message' => collect($exception->errors())->first()]))
+            return (new MessageResponseResource(collect(collect($exception->errors())->first())->first()))
                 ->response()
                 ->setStatusCode($exception->status);
 
         if ($exception instanceof ModelNotFoundException)
-            return (new MessageResponseResource(['success' => false, 'message' => $exception->getMessage()]))
+            return (new MessageResponseResource($exception->getMessage()))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
 
         if ($exception instanceof NotFoundHttpException)
-            return (new MessageResponseResource(['success' => false, 'message' => 'Rota não encontrada.']))
+            return (new MessageResponseResource('Rota não encontrada.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
 
         if ($exception instanceof UnauthorizedException || $exception instanceof AccessDeniedHttpException)
-            return (new MessageResponseResource(['success' => false, 'message' => 'O usuário não tem permissões para realizar essa operação.']))
+            return (new MessageResponseResource('O usuário não tem permissões para realizar essa operação.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_FORBIDDEN);
 

@@ -1,0 +1,222 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Template",
+        "description": "Documentação da API Template.",
+        "contact": {
+            "email": "daniel@danielneto.dev.br"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/registration/confirmation": {
+            "post": {
+                "tags": [
+                    "Confirmação de Cadastro"
+                ],
+                "summary": "Confirmar cadastro do usuário",
+                "description": "Confirmação de cadastro do usuário por meio do código enviado por e-mail ou SMS. Se o usuário não tiver uma senha cadastrada, será necessário enviar a senha e sua confirmação.",
+                "operationId": "App\\Traits\\Auth\\RegistrationConfirmation::confirmation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "example": 1
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Código de confirmação (Enviado para o usuário por e-mail ou SMS)",
+                        "required": true,
+                        "example": 952861
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Senha (Quando for obrigatória, será retornada uma mensagem de validação informando)",
+                        "required": false,
+                        "example": "password"
+                    },
+                    {
+                        "name": "password_confirmation",
+                        "in": "query",
+                        "description": "Confirmação de senha (Quando for obrigatória, será retornada uma mensagem de validação informando)",
+                        "required": false,
+                        "example": "password"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para confirmação do cadastro",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "token"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "952861"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operação efeutada com sucesso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "Cadastro confirmado com sucesso!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Código de verificação inválido.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "Código de verificação inválido."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validação dos parâmetros.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "O campo id é obrigatório."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/registration/confirmation/resend-code": {
+            "post": {
+                "tags": [
+                    "Confirmação de Cadastro"
+                ],
+                "summary": "Reenviar código de confirmação de cadastro",
+                "description": "Reenvia código de confirmação de cadastro por e-mail ou SMS.",
+                "operationId": "App\\Traits\\Auth\\RegistrationConfirmation::resendCode",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "E-mail do usuário",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados do usuário para reenvio do código de confirmação",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "fulano@dominio.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operação efeutada com sucesso.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "Código de confirmação reenviado com sucesso!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Código não encontrado devido ao usuário já se encontrar ativo ou não existir.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "Código de confirmação não encontrado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validação dos parâmetros.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "example": "O campo email é obrigatório."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}

@@ -8,6 +8,7 @@ use App\Http\Resources\Shared\MessageResponseResource;
 use App\Repositories\Users\UserRepositoryEloquent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -23,22 +24,25 @@ trait AuthenticatesUsers
      */
     public function login(LoginRequest $request, UserRepositoryEloquent $userRepository)
     {
-        $credentials = $request->only('email', 'password');
-        $attempt = Auth::attempt($credentials);
+        $user = $userRepository->findWhere([['email', '=', $request->get('email')]])->first();
+        $authenticated = false;
 
-        if (!$attempt || ($attempt && !Auth::user()->is_active && is_null(Auth::user()->activation_token))) {
-            return (new MessageResponseResource(['success' => false, 'message' => 'E-mail ou senha inválidos.']))
+        if (isset($user) && Hash::check($request->get('password'), $user->password)) {
+            $authenticated = true;
+        }
+
+        if (!$authenticated || (!$user->is_active && is_null($user->confirmation_token))) {
+            return (new MessageResponseResource('E-mail ou senha inválidos.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_UNAUTHORIZED);
         }
 
-        if (Auth::user()->is_active) {
+        if ($user->is_active) {
             $user = $userRepository
                 ->with(['avatar', 'telephones', 'roles'])
-                ->find(Auth::id());
+                ->find($user->id);
 
-            $tokenName = 'Personal Token ' . Auth::id();
-            $token = $user->createToken($tokenName);
+            $token = $user->createToken('Personal Access Token');
 
             return (new UserResource($user))->additional(['meta' => ['token' => $token->plainTextToken]]);
         }
@@ -60,7 +64,6 @@ trait AuthenticatesUsers
     public function logout(): MessageResponseResource
     {
         Auth::user()->currentAccessToken()->delete();
-
-        return (new MessageResponseResource(['success' => true, 'message' => 'Desconectado com sucesso!']));
+        return new MessageResponseResource('Desconectado com sucesso!');
     }
 }
