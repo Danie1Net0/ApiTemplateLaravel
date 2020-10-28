@@ -32,9 +32,9 @@ Route::prefix('v1')->group(function () {
         /**
          * Password Reset Routes
          */
-        Route::prefix('password')->namespace('Auth')->group(function () {
-            Route::post('request', 'ResetPasswordController@request');
-            Route::put('reset', 'ResetPasswordController@reset');
+        Route::namespace('Auth')->group(function () {
+            Route::post('forgot-password', 'ResetPasswordController@request');
+            Route::put('reset-password', 'ResetPasswordController@reset');
         });
 
         /**

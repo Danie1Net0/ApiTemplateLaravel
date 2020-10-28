@@ -5,12 +5,13 @@ namespace App\Notifications\Auth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 /**
- * Class EmailVerificationNotification
+ * Class RegistrationConfirmationNotification
  * @package App\Notifications\Auth
  */
-class EmailVerificationNotification extends Notification
+class RegistrationConfirmationNotification extends Notification
 {
     use Queueable;
 
@@ -43,14 +44,17 @@ class EmailVerificationNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $verificationUrl = env('APP_URL_FRONT', 'http://localhost:4200/') .
-            "auth/completar-cadastro/{$notifiable->id}/{$notifiable->activation_token}";
+        $token = new HtmlString(<<<EOL
+          <div style='text-align: center; font-size: 24px; margin-bottom: 20px;'>
+            <strong>$notifiable->confirmation_token</strong>
+          </div>
+        EOL);
 
         return (new MailMessage)
             ->subject('Verificar Cadastro')
             ->greeting('Seja bem vindo!')
-            ->line('Clique no botão abaixo para confirmar seu cadastro.')
-            ->action('Confirmar Cadastro', $verificationUrl)
+            ->line('Seu código de confirmação de cadastro é:')
+            ->line($token)
             ->line('Obrigado por juntar-se a nós!');
 
     }

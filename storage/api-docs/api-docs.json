@@ -9,7 +9,7 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/v1/registration/confirmation": {
+        "/api/v1/auth/registration/confirmation": {
             "post": {
                 "tags": [
                     "Confirmação de Cadastro"
@@ -19,11 +19,18 @@
                 "operationId": "App\\Traits\\Auth\\RegistrationConfirmation::confirmation",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "email",
                         "in": "query",
-                        "description": "ID do usuário",
+                        "description": "E-mail do usuário (Obrigatório apenas se não for enviado o número de celular)",
                         "required": true,
-                        "example": 1
+                        "example": "fulano@dominio.com"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Número de celular do usuário (Obrigatório apenas se não for enviado o e-mail)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
                     },
                     {
                         "name": "token",
@@ -48,19 +55,24 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Dados para confirmação do cadastro",
+                    "description": "Dados para confirmação do cadastro.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id",
+                                    "email",
+                                    "phone",
                                     "token"
                                 ],
                                 "properties": {
-                                    "id": {
-                                        "type": "integer",
-                                        "example": 1
+                                    "email": {
+                                        "type": "string",
+                                        "example": "fulano@dominio.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "17987654321"
                                     },
                                     "token": {
                                         "type": "string",
@@ -82,54 +94,18 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Operação efeutada com sucesso.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "Cadastro confirmado com sucesso!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Cadastro confirmado com sucesso. Retorna os dados do usuário com o token de autenticação."
                     },
                     "404": {
-                        "description": "Código de verificação inválido.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "Código de verificação inválido."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Código de verificação inválido."
                     },
                     "422": {
-                        "description": "Validação dos parâmetros.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "O campo id é obrigatório."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Validação dos parâmetros."
                     }
                 }
             }
         },
-        "/api/v1/registration/confirmation/resend-code": {
+        "/api/v1/auth/registration/confirmation/resend-code": {
             "post": {
                 "tags": [
                     "Confirmação de Cadastro"
@@ -141,24 +117,36 @@
                     {
                         "name": "email",
                         "in": "query",
-                        "description": "E-mail do usuário",
+                        "description": "E-mail do usuário (Obrigatório apenas se não for enviado o número de celular)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Número de celular do usuário (Obrigatório apenas se não for enviado o e-mail)",
                         "required": true,
                         "example": "fulano@dominio.com"
                     }
                 ],
                 "requestBody": {
-                    "description": "Dados do usuário para reenvio do código de confirmação",
+                    "description": "Dados do usuário para reenvio do código de confirmação.",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "email"
+                                    "email",
+                                    "phone"
                                 ],
                                 "properties": {
                                     "email": {
                                         "type": "string",
                                         "example": "fulano@dominio.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "17987654321"
                                     }
                                 },
                                 "type": "object"
@@ -168,54 +156,187 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Operação efeutada com sucesso.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "Código de confirmação reenviado com sucesso!"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Código reenviado com sucesso."
                     },
                     "404": {
-                        "description": "Código não encontrado devido ao usuário já se encontrar ativo ou não existir.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "Código de confirmação não encontrado."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Código não encontrado devido ao usuário já estar ativo ou não existir."
                     },
                     "422": {
-                        "description": "Validação dos parâmetros.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "example": "O campo email é obrigatório."
-                                        }
+                        "description": "Validação dos parâmetros."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/registration/forgot-password": {
+            "post": {
+                "tags": [
+                    "Recuperação de Senha"
+                ],
+                "summary": "Solicitar recuperação de senha do usuário. O usuário deverá se estar ativo.",
+                "description": "Solicita envio do código de recuperação de senha do usuário por e-mail ou SMS.",
+                "operationId": "App\\Traits\\Auth\\ResetPasswords::request",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "E-mail do usuário (Obrigatório apenas se não for enviado o número de celular)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Número de celular do usuário (Obrigatório apenas se não for enviado o e-mail)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados do usuário para envio do código de recuperação de senha.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "fulano@dominio.com"
                                     },
-                                    "type": "object"
-                                }
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "17987654321"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Recuperação de senha enviada com sucesso."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado por não existir ou não estar ativo."
+                    },
+                    "422": {
+                        "description": "Validação dos parâmetros."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/registration/reset-password": {
+            "post": {
+                "tags": [
+                    "Recuperação de Senha"
+                ],
+                "summary": "Recuperar senha do usuário",
+                "description": "Realiza recuperação de senha do usuário por meio de código de recuperação enviado por e-mail ou SMS.",
+                "operationId": "App\\Traits\\Auth\\ResetPasswords::reset",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "E-mail do usuário (Obrigatório apenas se não for enviado o número de celular)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Número de celular do usuário (Obrigatório apenas se não for enviado o e-mail)",
+                        "required": true,
+                        "example": "fulano@dominio.com"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Código de confirmação (Enviado para o usuário por e-mail ou SMS)",
+                        "required": true,
+                        "example": 952861
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Senha",
+                        "required": true,
+                        "example": "password"
+                    },
+                    {
+                        "name": "password_confirmation",
+                        "in": "query",
+                        "description": "Confirmação de senha",
+                        "required": true,
+                        "example": "password"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados do usuário para reenvio do código de confirmação",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "phone",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "fulano@dominio.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "17987654321"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "952861"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Senha recuperada com sucesso."
+                    },
+                    "403": {
+                        "description": "Token de recuperação de senha expirado ou inválido."
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado por não existir ou não estar ativo."
+                    },
+                    "422": {
+                        "description": "Validação dos parâmetros."
                     }
                 }
             }
         }
     },
+    "tags": [
+        {
+            "name": "Projects",
+            "description": "API Endpoints of Projects"
+        }
+    ],
     "security": [
         []
     ]

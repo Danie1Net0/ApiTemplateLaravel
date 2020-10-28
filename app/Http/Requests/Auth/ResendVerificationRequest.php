@@ -28,7 +28,8 @@ class ResendVerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'email', 'exists:users']
+            'email' => ['required_without:phone', 'email', 'exists:users'],
+            'phone' => ['required_without:email', 'string', 'size:11', 'exists:telephones,number'],
         ];
     }
 }

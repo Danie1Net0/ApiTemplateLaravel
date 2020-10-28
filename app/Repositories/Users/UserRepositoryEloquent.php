@@ -3,7 +3,7 @@
 namespace App\Repositories\Users;
 
 use App\Criteria\Users\UpdateUserCriteria;
-use App\Notifications\Auth\EmailVerificationNotification;
+use App\Notifications\Auth\RegistrationConfirmationNotification;
 use App\Repositories\Contracts\Users\UserRepository;
 use App\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -49,7 +49,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
                 $attributes['password'] = Hash::make($attributes['password']);
             }
 
-            $attributes['confirmation_token'] = confirmationTokenGenerate($this);
+            $attributes['confirmation_token'] = tokenGenerate($this, 'confirmation_token');
 
             $model = $this->model->newInstance($attributes);
             $model->save();
@@ -65,7 +65,7 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
                 $model->assignRole('Usuário');
             }
 
-            Notification::send($model, new EmailVerificationNotification());
+            Notification::send($model, new RegistrationConfirmationNotification());
 
             return $this->parserResult($model);
         });

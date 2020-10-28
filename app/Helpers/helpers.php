@@ -1,19 +1,21 @@
 <?php
 
-use App\Repositories\Users\UserRepositoryEloquent;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
- * Gera token de confirmação único.
+ * Gera token único.
  *
- * @param UserRepositoryEloquent $userRepository
+ * @param BaseRepository $repository
+ * @param string $tokenName
+ * @param int $length
  * @return string
  */
-function confirmationTokenGenerate(UserRepositoryEloquent $userRepository): string
+function tokenGenerate(BaseRepository $repository, string $tokenName, int $length = 6): string
 {
     do {
-        $confirmationToken = rand(100000, 999999);
-        $tokenExists = !is_null($userRepository->findWhere([['confirmation_token', '=', $confirmationToken]])->first());
+        $token = rand(pow(10, $length - 1), pow(10, $length) - 1);
+        $tokenExists = !is_null($repository->findWhere([[$tokenName, '=', $token]])->first());
     } while ($tokenExists);
 
-    return $confirmationToken;
+    return $token;
 }

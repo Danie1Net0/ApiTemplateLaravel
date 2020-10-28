@@ -38,7 +38,7 @@ class RolesAndPermissionsSeeder extends Seeder
     private function createPermissions(): void
     {
         foreach (Route::getRoutes() as $route) {
-            if ($route->getPrefix() === 'api') {
+            if ($route->getPrefix() === 'api/v1') {
                 $permission = $route->getName();
 
                 if (is_null(Permission::where('name', $permission)->first())) {

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 /**
  * Class ResetPasswordNotification
@@ -44,15 +45,18 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $passwordResetUrl = env('APP_URL_FRONT', 'http://localhost:4200/') .
-            "auth/nova-senha/{$notifiable->user_id}/{$notifiable->token}";
+        $token = new HtmlString(<<<EOL
+          <div style='text-align: center; font-size: 24px; margin-bottom: 15px;'>
+            <strong>$notifiable->token</strong>
+          </div>
+        EOL);
 
         return (new MailMessage)
             ->subject('Recuperar Senha')
             ->greeting('Olá!')
-            ->line('Clique no botão abaixo para redefinir sua senha.')
-            ->action('Redefinir Senha', $passwordResetUrl)
-            ->line('Esse link de redefinição de senha expirará em 60 minutos.');
+            ->line('Seu código de recuperação de senha é:')
+            ->line($token)
+            ->line('Este código expirará em 60 minutos.');
 
     }
 
