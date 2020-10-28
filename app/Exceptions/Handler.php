@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Http\Resources\Shared\MessageResponseResource;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
@@ -60,28 +61,39 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof DeleteResourceException)
+        if ($exception instanceof DeleteResourceException) {
             return new MessageResponseResource($exception->getMessage());
+        }
 
-        if ($exception instanceof ValidationException)
+        if ($exception instanceof ValidationException) {
             return (new MessageResponseResource(collect(collect($exception->errors())->first())->first()))
                 ->response()
                 ->setStatusCode($exception->status);
+        }
 
-        if ($exception instanceof ModelNotFoundException)
+        if ($exception instanceof ModelNotFoundException) {
             return (new MessageResponseResource($exception->getMessage()))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
+        }
 
-        if ($exception instanceof NotFoundHttpException)
+        if ($exception instanceof NotFoundHttpException) {
             return (new MessageResponseResource('Rota não encontrada.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
+        }
 
-        if ($exception instanceof UnauthorizedException || $exception instanceof AccessDeniedHttpException)
+        if ($exception instanceof UnauthorizedException || $exception instanceof AccessDeniedHttpException) {
             return (new MessageResponseResource('O usuário não tem permissões para realizar essa operação.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_FORBIDDEN);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return (new MessageResponseResource($exception->getMessage()))
+                ->response()
+                ->setStatusCode(Response::HTTP_FORBIDDEN);
+        }
 
         return parent::render($request, $exception);
     }

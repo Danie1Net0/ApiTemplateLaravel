@@ -56,7 +56,6 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
             $this->resetModel();
 
             $model->avatar()->create();
-            $model->storeTelephones($attributes['telephones'] ?? []);
 
             if (Auth::check() && Auth::user()->hasRole('Super Administrador|Administrador')) {
                 $model->assignRole($attributes['roles'] ?? 'Usuário');

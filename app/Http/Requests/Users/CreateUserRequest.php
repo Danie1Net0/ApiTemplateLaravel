@@ -29,11 +29,9 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'max:255', 'unique:users'],
+            'email' => ['required_without:phone', 'email', 'unique:users'],
+            'phone' => ['required_without:email', 'string', 'size:11', 'unique:users,cell_phone'],
             'password' => ['nullable', 'string', 'max:20', 'confirmed'],
-            'telephones' => ['nullable', 'array'],
-            'telephones.*.number' => ['required', 'string', 'max:15'],
-            'telephones.*.type' => ['required', 'string', 'max:15'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['required', 'integer', 'exists:roles,id'],
             'permissions' => ['nullable', 'array'],

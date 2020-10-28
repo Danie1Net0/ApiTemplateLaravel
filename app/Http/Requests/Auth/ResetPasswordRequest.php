@@ -29,7 +29,7 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'email' => ['required_without:phone', 'email', 'exists:users'],
-            'phone' => ['required_without:email', 'string', 'size:11', 'exists:telephones,number'],
+            'phone' => ['required_without:email', 'string', 'size:11', 'exists:users,cell_phone'],
             'token' => ['required', 'string', 'exists:password_resets'],
             'password' => ['required', 'string', 'min:8', 'max:20', 'confirmed']
         ];

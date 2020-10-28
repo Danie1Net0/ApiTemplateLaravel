@@ -10,12 +10,12 @@ use App\Repositories\Auth\PasswordResetRepositoryEloquent;
 use App\Repositories\Users\UserRepositoryEloquent;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Trait ResetPasswords
@@ -208,9 +208,7 @@ trait ResetPasswords
             }
 
             if (Carbon::parse($user->passwordReset->updated_at)->addMinutes(60)->isPast()) {
-                return (new MessageResponseResource('Token de recuperação de senha expirado ou inválido.'))
-                    ->response()
-                    ->setStatusCode(Response::HTTP_FORBIDDEN);
+                throw new AuthorizationException('Token de recuperação de senha expirado ou inválido.');
             }
 
             $this->userRepository->update($request->only('password'), $user->id);
@@ -229,9 +227,7 @@ trait ResetPasswords
         return $this->userRepository->scopeQuery(function ($query) use ($request) {
             return $query->where(function ($query) use ($request) {
                 return $query->where('email', $request->get('email'))
-                    ->orWhereHas('telephones', function ($query) use ($request) {
-                        return $query->where('number', $request->get('phone'));
-                    });
+                    ->orWhere('cell_phone', $request->get('phone'));
             })
             ->where('is_active', true);
         })->first();

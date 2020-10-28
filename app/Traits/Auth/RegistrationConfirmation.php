@@ -8,13 +8,14 @@ use App\Http\Resources\Shared\MessageResponseResource;
 use App\Http\Resources\Users\UserResource;
 use App\Notifications\Auth\RegistrationConfirmationNotification;
 use App\Repositories\Users\UserRepositoryEloquent;
+use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 /**
  * Trait RegistrationConfirmation
- *
  * @package App\Traits\Auth
  */
 trait RegistrationConfirmation
@@ -26,7 +27,6 @@ trait RegistrationConfirmation
 
     /**
      * VerificationController constructor.
-     *
      * @param UserRepositoryEloquent $userRepository
      */
     public function __construct(UserRepositoryEloquent $userRepository)
@@ -106,15 +106,7 @@ trait RegistrationConfirmation
      */
     public function confirmation(ConfirmationRegistrationRequest $request): UserResource
     {
-        $user = $this->userRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where(function ($query) use ($request) {
-                return $query->where('email', $request->get('email'))
-                    ->orWhereHas('telephones', function ($query) use ($request) {
-                        return $query->where('number', $request->get('phone'));
-                    });
-            })
-            ->where('confirmation_token', $request->get('token'));
-        })->first();
+        $user = $this->findUser($request);
 
         $attributes = ['is_active' => true, 'confirmation_token' => null];
 
@@ -182,15 +174,7 @@ trait RegistrationConfirmation
      */
     public function resendCode(ResendVerificationRequest $request): MessageResponseResource
     {
-        $user = $this->userRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where(function ($query) use ($request) {
-                return $query->where('email', $request->get('email'))
-                    ->orWhereHas('telephones', function ($query) use ($request) {
-                        return $query->where('number', $request->get('phone'));
-                    });
-            })
-            ->where('confirmation_token', '<>', null);
-        })->first();
+        $user = $this->findUser($request);
 
         if (is_null($user)) {
             throw new ModelNotFoundException('Código de confirmação não encontrado.');
@@ -199,5 +183,19 @@ trait RegistrationConfirmation
         Notification::send($user, new RegistrationConfirmationNotification());
 
         return new MessageResponseResource('Código de confirmação reenviado com sucesso!');
+    }
+
+    /**
+     * @param FormRequest $request
+     * @return User|null
+     */
+    public function findUser(FormRequest $request): ?User
+    {
+        return $this->userRepository->scopeQuery(function ($query) use ($request) {
+            return $query->where(function ($query) use ($request) {
+                return $query->where('email', $request->get('email'))
+                    ->orWhere('cell_phone', $request->get('phone'));
+            })->where('confirmation_token', '<>', null);
+        })->first();
     }
 }
