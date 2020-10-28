@@ -24,7 +24,12 @@ trait AuthenticatesUsers
      */
     public function login(LoginRequest $request, UserRepositoryEloquent $userRepository)
     {
-        $user = $userRepository->findWhere([['email', '=', $request->get('email')]])->first();
+        if ($request->has('email')) {
+            $user = $userRepository->findWhere(['email' => $request->get('email')])->first();
+        } else {
+            $user = $userRepository->findWhere(['cell_phone' => $request->get('phone')])->first();
+        }
+
         $authenticated = false;
 
         if (isset($user) && Hash::check($request->get('password'), $user->password)) {
