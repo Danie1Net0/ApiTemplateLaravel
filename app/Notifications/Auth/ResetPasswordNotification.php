@@ -2,6 +2,7 @@
 
 namespace App\Notifications\Auth;
 
+use App\Broadcasting\SmsChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,7 +13,7 @@ use Illuminate\Support\HtmlString;
  * Class ResetPasswordNotification
  * @package App\Notifications\Auth
  */
-class ResetPasswordNotification extends Notification
+class ResetPasswordNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -34,7 +35,10 @@ class ResetPasswordNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return [
+            'mail',
+            'sms',
+        ];
     }
 
     /**
@@ -58,6 +62,20 @@ class ResetPasswordNotification extends Notification
             ->line($token)
             ->line('Este código expirará em 60 minutos.');
 
+    }
+
+    /**
+     * Get the SMS representation of the notification.
+     *
+     * @param mixed $notifiable
+     * @return array
+     */
+    public function toSms($notifiable)
+    {
+        return [
+            'to' => $notifiable->phone,
+            'message' => config('app.name') . ' - Seu código de recuperação de senha é: ' . $notifiable->token
+        ];
     }
 
     /**

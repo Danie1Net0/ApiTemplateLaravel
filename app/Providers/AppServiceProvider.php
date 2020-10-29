@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Auth\PersonalAccessToken;
+use App\Broadcasting\SmsChannel;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        Notification::extend('sms', fn ($app) => new SmsChannel());
     }
 
     /**

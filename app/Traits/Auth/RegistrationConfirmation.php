@@ -193,8 +193,15 @@ trait RegistrationConfirmation
     {
         return $this->userRepository->scopeQuery(function ($query) use ($request) {
             return $query->where(function ($query) use ($request) {
-                return $query->where('email', $request->get('email'))
-                    ->orWhere('cell_phone', $request->get('phone'));
+                if ($request->has('email')) {
+                    $query->where('email', $request->get('email'));
+                }
+
+                if ($request->has('phone')) {
+                    $query->orWhere('cell_phone', $request->get('phone'));
+                }
+
+                return $query;
             })->where('confirmation_token', '<>', null);
         })->first();
     }

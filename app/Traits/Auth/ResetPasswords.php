@@ -113,8 +113,8 @@ trait ResetPasswords
         } else {
             $passwordReset = $this->passwordResetRepository->create([
                 'user_id' => $user->id,
-                'email' => $request->get('email'),
-                'phone' => $request->get('phone'),
+                'email' => $user->email,
+                'phone' => $user->cell_phone,
                 'token' => $token
             ]);
         }
@@ -203,11 +203,11 @@ trait ResetPasswords
         return DB::transaction(function () use ($request) {
             $user = $this->findUser($request);
 
-            if (is_null($user)) {
-                throw new ModelNotFoundException('Usuário não encontrado.');
-            }
-
-            if (Carbon::parse($user->passwordReset->updated_at)->addMinutes(60)->isPast()) {
+            if (
+                is_null($user) ||
+                is_null($user->passwordReset) ||
+                Carbon::parse($user->passwordReset->updated_at)->addMinutes(60)->isPast()
+            ) {
                 throw new AuthorizationException('Token de recuperação de senha expirado ou inválido.');
             }
 
@@ -226,8 +226,15 @@ trait ResetPasswords
     {
         return $this->userRepository->scopeQuery(function ($query) use ($request) {
             return $query->where(function ($query) use ($request) {
-                return $query->where('email', $request->get('email'))
-                    ->orWhere('cell_phone', $request->get('phone'));
+                if ($request->has('email')) {
+                    $query->where('email', $request->get('email'));
+                }
+
+                if ($request->has('phone')) {
+                    $query->orWhere('cell_phone', $request->get('phone'));
+                }
+
+                return $query;
             })
             ->where('is_active', true);
         })->first();

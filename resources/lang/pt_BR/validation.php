@@ -151,6 +151,7 @@ return [
         'age'       => 'idade',
         'body'      => 'conteúdo',
         'cell'      => 'celular',
+        'cell_phone'      => 'celular',
         'city'      => 'cidade',
         'country'   => 'país',
         'date'      => 'data',

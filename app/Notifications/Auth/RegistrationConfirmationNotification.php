@@ -3,6 +3,7 @@
 namespace App\Notifications\Auth;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
@@ -11,7 +12,7 @@ use Illuminate\Support\HtmlString;
  * Class RegistrationConfirmationNotification
  * @package App\Notifications\Auth
  */
-class RegistrationConfirmationNotification extends Notification
+class RegistrationConfirmationNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -33,7 +34,10 @@ class RegistrationConfirmationNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return [
+            'mail',
+            'sms',
+        ];
     }
 
     /**
@@ -57,6 +61,20 @@ class RegistrationConfirmationNotification extends Notification
             ->line($token)
             ->line('Obrigado por juntar-se a nós!');
 
+    }
+
+    /**
+     * Get the SMS representation of the notification.
+     *
+     * @param mixed $notifiable
+     * @return array
+     */
+    public function toSms($notifiable)
+    {
+        return [
+            'to' => $notifiable->cell_phone,
+            'message' => config('app.name') . ' - Seu código de confirmação de cadastro é: ' . $notifiable->confirmation_token
+        ];
     }
 
     /**
