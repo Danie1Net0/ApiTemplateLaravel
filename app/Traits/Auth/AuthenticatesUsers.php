@@ -44,17 +44,19 @@ trait AuthenticatesUsers
 
         if ($user->is_active) {
             $user = $userRepository
-                ->with(['avatar', 'telephones', 'roles'])
+                ->with(['avatar', 'telephones', 'roles', 'permissions'])
                 ->find($user->id);
 
             $token = $user->createToken('Personal Access Token');
 
-            return (new UserResource($user))->additional(['meta' => ['token' => $token->plainTextToken]]);
+            return (new UserResource($user))->additional([
+                'data' => ['token' => $token->plainTextToken],
+                'meta' => ['message' => 'Usuário autenticado com sucesso!']
+            ]);
         }
 
         return (new MessageResponseResource([
-            'success' => false,
-            'message' => 'Cadastro não verificado.',
+            'description' => 'Cadastro não verificado.',
             'resend_verification' => [
                 'url' => url(route('resend_verification')),
                 'method' => 'POST'
