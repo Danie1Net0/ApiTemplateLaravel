@@ -31,8 +31,8 @@ class IndexPermissionRequest extends FormRequest
     {
         return [
             'paginate' => ['nullable', 'integer', 'min:1'],
-            'conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
-            'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
+            'conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
+            'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
         ];
     }
 }

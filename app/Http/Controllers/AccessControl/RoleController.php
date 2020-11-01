@@ -31,12 +31,7 @@ class RoleController extends Controller
      */
     public function __construct(RoleRepositoryEloquent $roleRepository)
     {
-        $this->middleware('auth:api');
-        $this->middleware('permission:Listar Função')->only('index');
-        $this->middleware('permission:Criar Função')->only('store');
-        $this->middleware('permission:Visualizar Função')->only('show');
-        $this->middleware('permission:Editar Função')->only('update');
-        $this->middleware('permission:Deletar Função')->only('destroy');
+        $this->middleware(['auth:api', 'verify_permission']);
 
         $this->roleRepository = $roleRepository;
     }
@@ -47,11 +42,11 @@ class RoleController extends Controller
      */
     public function index(IndexRoleRequest $request): AnonymousResourceCollection
     {
-        $roles = $this->roleRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where($request->search ?? []);
-        })->paginate($request->paginate ?? 10);
+        $roles = $this->roleRepository->scopeQuery(fn () => filterResources($this->roleRepository, $request));
+        $roles = getResources($roles, $request);
 
-        return RoleResource::collection($roles);
+        return RoleResource::collection($roles)
+            ->additional(['meta' => ['message' => 'Funções recuperadas com sucesso!']]);
     }
 
     /**
@@ -62,7 +57,7 @@ class RoleController extends Controller
     public function store(CreateRoleRequest $request): RoleResource
     {
         $role = $this->roleRepository->create($request->all());
-        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões cadastrado com sucesso!']]);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função cadastrada com sucesso!']]);
     }
 
     /**
@@ -72,7 +67,7 @@ class RoleController extends Controller
     public function show(int $id): RoleResource
     {
         $role = $this->roleRepository->find($id);
-        return new RoleResource($role);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função recuperada com sucesso!']]);
     }
 
     /**
@@ -84,7 +79,7 @@ class RoleController extends Controller
     public function update(UpdateRoleRequest $request, int $id)
     {
         $role = $this->roleRepository->update($request->all(), $id);
-        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões atualizado com sucesso!']]);
+        return (new RoleResource($role))->additional(['data' => ['message' => 'Função atualizada com sucesso!']]);
     }
 
     /**
@@ -96,7 +91,7 @@ class RoleController extends Controller
     {
         try {
             $this->roleRepository->delete($id);
-            return new MessageResponseResource(['success' => true, 'message' => 'Grupo de Permissões removido com successo!']);
+            return new MessageResponseResource(['success' => true, 'message' => 'Função removida com successo!']);
         } catch (Exception $exception) {
             throw new DeleteResourceException($exception->getMessage());
         }

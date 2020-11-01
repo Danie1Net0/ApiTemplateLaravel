@@ -52,8 +52,6 @@ function filterResources(BaseRepository  $repository, Request $request): Builder
         }
     }
 
-    $query->role($request->has('roles') ? explode(',', $request->get('roles')) : 'Usuário');
-
     if ($request->has('relationships')) {
         $query->with(explode(',', $request->get('relationships')));
     }
