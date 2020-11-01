@@ -5,7 +5,7 @@ namespace App\Http\Controllers\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessControl\Permissions\IndexPermissionRequest;
 use App\Http\Resources\AccessControl\PermissionResource;
-use App\Repositories\AccessControl\PermissionRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\PermissionRepositoryEloquent;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**

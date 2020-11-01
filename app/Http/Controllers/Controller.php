@@ -8,14 +8,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
- * @OA\Info(
- *     title="API Template",
- *     version="1.0.0",
- *     description="Documentação da API Template.",
- *     @OA\Contact(
- *         email="daniel@danielneto.dev.br"
- *     )
- * )
+ * Class Controller
+ * @package App\Http\Controllers
  */
 class Controller extends BaseController
 {

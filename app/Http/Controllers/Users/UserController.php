@@ -9,7 +9,7 @@ use App\Http\Requests\Users\ShowUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\Shared\MessageResponseResource;
 use App\Http\Resources\Users\UserResource;
-use App\Repositories\Users\UserRepositoryEloquent;
+use App\Repositories\Implementations\Users\UserRepositoryEloquent;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Prettus\Repository\Exceptions\RepositoryException;
 

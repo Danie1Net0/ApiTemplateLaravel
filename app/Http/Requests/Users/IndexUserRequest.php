@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Users;
 
-use App\Repositories\AccessControl\RoleRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
 use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
 use App\Rules\Shared\CheckIfRoleExistsRule;

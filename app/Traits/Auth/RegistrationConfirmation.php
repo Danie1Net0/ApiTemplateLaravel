@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\ResendVerificationRequest;
 use App\Http\Resources\Shared\MessageResponseResource;
 use App\Http\Resources\Users\UserResource;
 use App\Notifications\Auth\RegistrationConfirmationNotification;
-use App\Repositories\Users\UserRepositoryEloquent;
+use App\Repositories\Implementations\Users\UserRepositoryEloquent;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;

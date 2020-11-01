@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\AccessControl;
+namespace App\Repositories\Implementations\AccessControl;
 
 use App\Models\AccessControl\Role;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -18,8 +18,8 @@ use Prettus\Repository\Exceptions\RepositoryException;
 use Exception;
 
 /**
- * Class RoleRepositoryEloquent.
- * @package namespace App\Repositories\AccessControl;
+ * Class RoleRepositoryEloquent
+ * @package App\Repositories\Implementations\AccessControl
  */
 class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
 {

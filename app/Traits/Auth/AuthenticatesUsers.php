@@ -5,7 +5,7 @@ namespace App\Traits\Auth;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Users\UserResource;
 use App\Http\Resources\Shared\MessageResponseResource;
-use App\Repositories\Users\UserRepositoryEloquent;
+use App\Repositories\Implementations\Users\UserRepositoryEloquent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

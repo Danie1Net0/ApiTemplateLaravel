@@ -2,7 +2,7 @@
 
 namespace App\Rules\Shared;
 
-use App\Repositories\AccessControl\RoleRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Schema;
 

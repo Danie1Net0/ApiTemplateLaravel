@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Users;
+namespace App\Repositories\Implementations\Users;
 
 use App\Criteria\Users\UpdateUserCriteria;
 use App\Notifications\Auth\RegistrationConfirmationNotification;
@@ -21,8 +21,8 @@ use Prettus\Repository\Events\RepositoryEntityUpdating;
 use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
- * Class UserRepositoryEloquent.
- * @package namespace App\Repositories\Users;
+ * Class UserRepositoryEloquent
+ * @package App\Repositories\Implementations\Users
  */
 class UserRepositoryEloquent extends BaseRepository implements UserRepository
 {

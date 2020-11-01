@@ -9,7 +9,7 @@ use App\Http\Requests\AccessControl\Roles\IndexRoleRequest;
 use App\Http\Requests\AccessControl\Roles\UpdateRoleRequest;
 use App\Http\Resources\AccessControl\RoleResource;
 use App\Http\Resources\Shared\MessageResponseResource;
-use App\Repositories\AccessControl\RoleRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
 use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Prettus\Repository\Exceptions\RepositoryException;

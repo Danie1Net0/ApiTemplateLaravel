@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Auth;
+namespace App\Repositories\Implementations\Auth;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -9,8 +9,8 @@ use App\Models\Auth\PasswordReset;
 use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
- * Class PasswordResetRepositoryEloquent.
- * @package namespace App\Repositories\Auth;
+ * Class PasswordResetRepositoryEloquent
+ * @package App\Repositories\Implementations\Auth
  */
 class PasswordResetRepositoryEloquent extends BaseRepository implements PasswordResetRepository
 {
