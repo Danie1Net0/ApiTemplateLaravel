@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\AccessControl\Permissions;
 
+use App\Rules\Shared\CheckSearchParamsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,8 +31,8 @@ class IndexPermissionRequest extends FormRequest
     {
         return [
             'paginate' => ['nullable', 'integer', 'min:1'],
-            'search' => ['nullable', 'array'],
-            'search.*' => ['required', 'min:2', 'max:3']
+            'conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
+            'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
         ];
     }
 }

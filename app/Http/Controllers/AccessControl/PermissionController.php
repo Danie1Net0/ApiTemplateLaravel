@@ -25,9 +25,7 @@ class PermissionController extends Controller
      */
     public function __construct(PermissionRepositoryEloquent $permissionRepository)
     {
-        $this->middleware('auth:sanctum');
-        $this->middleware('permission:listar-permissao')->only('index');
-        $this->middleware('permission:visualizar-permissao')->only('show');
+        $this->middleware(['auth:sanctum', 'verify_permission']);
 
         $this->permissionRepository = $permissionRepository;
     }
@@ -38,13 +36,12 @@ class PermissionController extends Controller
      */
     public function index(IndexPermissionRequest $request): AnonymousResourceCollection
     {
-        $permissions = $this->permissionRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where($request->search ?? []);
-        });
+        $permissions = $this->permissionRepository
+            ->scopeQuery(fn () => filterResources($this->permissionRepository, $request));
+        $permissions = getResources($permissions, $request);
 
-        $permissions = $request->paginate ? $permissions->paginate($request->paginate) : $permissions->all();
-
-        return PermissionResource::collection($permissions);
+        return PermissionResource::collection($permissions)
+            ->additional(['meta' => 'Permissões recuperadas com sucesso!']);
     }
 
     /**
@@ -54,6 +51,6 @@ class PermissionController extends Controller
     public function show(int $id): PermissionResource
     {
         $permission = $this->permissionRepository->find($id);
-        return new PermissionResource($permission);
+        return (new PermissionResource($permission))->additional(['meta' => 'Permissãp recuperada com sucesso!']);
     }
 }
