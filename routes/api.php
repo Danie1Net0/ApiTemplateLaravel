@@ -59,7 +59,7 @@ Route::prefix('v1')->group(function () {
     /**
      * Access Control Routes
      */
-    Route::namespace('AccessControl')->group(function () {
+    Route::namespace('AccessControl')->prefix('access-control')->group(function () {
         Route::apiResource('roles', 'RoleController');
         Route::apiResource('permissions', 'PermissionController')->only(['index', 'show']);
     });
@@ -67,8 +67,5 @@ Route::prefix('v1')->group(function () {
     /**
      * Users Routes
      */
-    Route::namespace('Users')->group(function () {
-        Route::apiResource('users', 'UserController');
-    });
-
+    Route::apiResource('users', 'Users\UserController');
 });

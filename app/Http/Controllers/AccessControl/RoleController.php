@@ -42,8 +42,6 @@ class RoleController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
      * @param IndexRoleRequest $request
      * @return AnonymousResourceCollection
      */

@@ -1,0 +1,1187 @@
+openapi: 3.0.1
+
+info:
+  title: API Template
+  description: Documentação da API Template.
+  contact:
+    email: daniel@danielneto.dev.br
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+  
+servers:
+- url: https://localhost:8008/api/v1
+- url: http://localhost:8008/api/v1
+
+paths:
+  /auth/login:
+    post:
+      tags:
+      - Autenticação
+      summary: Login
+      description: Autentica usuário com email ou número de celular.
+      operationId: authLogin
+      parameters:
+      - name: email
+        in: query
+        description: E-mail do usuário (Obrigatório apenas se não for enviado 
+          o número de celular).
+        required: true
+        schema:
+          type: string
+        example: fulano@dominio.com
+      - name: phone
+        in: query
+        description: Número de celular do usuário (Obrigatório apenas se não for
+          enviado o e-mail).
+        required: true
+        schema:
+          type: string
+        example: "17987654321"
+      - name: password
+        in: query
+        description: Senha do usuário.
+        required: true
+        schema:
+          type: string
+        example: "password"
+      requestBody:
+        description: Credenciais do usuário.
+        content:
+          'application/json':
+            schema:
+              required:
+              - email
+              - password
+              - phone
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: fulano@dominio.com
+                phone:
+                  type: string
+                  format: string
+                  example: "17987654321"
+                password:
+                  type: string
+                  format: password
+                  example: password
+        required: true
+      responses:
+        200:
+          description: Autenticação realizada com sucesso. Retorna os dados do 
+            usuário com o token de autenticação.
+        401:
+          description: Credenciais inválidas ou cadastro não confirmado.
+        422:
+          description: Validação dos parâmetros.
+      
+  /auth/logout:
+    post:
+      tags:
+      - Autenticação
+      summary: Logout
+      description: Revoga token de autenticação.
+      operationId: authLogout
+      responses:
+        200:
+          description: Usuário desconectado.
+        401:
+          description: Usuário não autenticado.
+      security:
+      - bearer: []
+      
+  /auth/registration:
+    post:
+      tags:
+        - Cadastro de Usuários
+      summary: Cadastrar Usuário
+      description: Cadastra novo usuário.
+      operationId: createUserPublic
+      parameters:
+        - name: name
+          in: query
+          description: Nome do usuário.
+          required: true
+          schema:
+            type: string
+          example: Fulano
+        - name: email
+          in: query
+          description: E-mail do usuário (Obrigatório apenas se não for enviado o
+            número de celular).
+          required: true
+          schema:
+            type: string
+          example: fulano@dominio.com
+        - name: phone
+          in: query
+          description: Número de celular do usuário (Obrigatório apenas se não for
+            enviado o e-mail).
+          required: true
+          schema:
+            type: string
+          example: "17987654321"  
+        - name: password
+          in: query
+          description: Nova senha.
+          required: true
+          schema:
+            type: string
+          example: password
+        - name: password_confirmation
+          in: query
+          description: Confirmação da nova senha.
+          required: true
+          schema:
+            type: string
+          example: password
+      requestBody:
+        description: Dados do novo usuário.
+        content:
+          'application/json':
+            schema:
+              required:
+              - name
+              - email
+              - cell_phone
+              - password
+              - password_confirmation
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fulano
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                cell_phone:
+                  type: string
+                  example: "17987654321"
+                password:
+                  type: string
+                  example: password
+                password_confirmation:
+                  type: string
+                  example: password
+      responses:
+          201:
+            $ref: '#/components/responses/created'
+          422:
+            $ref: '#/components/responses/unprocessable'
+      
+  /auth/registration/confirmation:
+    post:
+      tags:
+      - Cadastro de Usuários
+      summary: Confirmar cadastro do usuário
+      description: |-
+        Confirmação de cadastro do usuário por meio do código enviado por e-mail
+        ou SMS.  
+        
+        Se o usuário não tiver uma senha cadastrada, será necessário enviar a 
+        senha e sua confirmação."
+      operationId: confirmationRegistration
+      parameters:
+      - name: email
+        in: query
+        description: E-mail do usuário (Obrigatório apenas se não for enviado o
+          número de celular).
+        required: true
+        schema:
+          type: string
+        example: fulano@dominio.com
+      - name: phone
+        in: query
+        description: Número de celular do usuário (Obrigatório apenas se não for
+          enviado o e-mail).
+        schema:
+          type: string
+        example: "17987654321"
+      - name: token
+        in: query
+        description: Código de confirmação (Enviado para o usuário por e-mail ou
+          SMS).
+        required: true
+        schema:
+          type: string
+        example: "952861"
+      - name: password
+        in: query
+        description: Senha (Quando for obrigatória, será retornada uma mensagem
+          de validação informando).
+        schema:
+          type: string
+        example: "password"
+      - name: password_confirmation
+        in: query
+        description: Confirmação de senha (Quando for obrigatória, será 
+          retornada uma mensagem de validação informando).
+        schema:
+          type: string
+        example: "password"
+      requestBody:
+        description: Dados para confirmação do cadastro.
+        content:
+          'application/json':
+            schema:
+              required:
+              - email
+              - phone
+              - token
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                phone:
+                  type: string
+                  example: "17987654321"
+                token:
+                  type: string
+                  example: "952861"
+                password:
+                  type: string
+                  example: password
+                password_confirmation:
+                  type: string
+                  example: password
+        required: true
+      responses:
+        200:
+          description: Cadastro confirmado com sucesso. Retorna os dados do
+            usuário com o token de autenticação.
+        404:
+          description: Código de verificação inválido.
+        422:
+          description: Validação dos parâmetros.
+
+  /auth/registration/confirmation/resend-code:
+    post:
+      tags: 
+      - Cadastro de Usuários
+      summary: Reenviar código de confirmação de cadastro.
+      description: Reenvia código de confirmação de cadastro por e-mail ou SMS.
+      operationId: resendConfirmationCode
+      parameters:
+      - name: email
+        in: query
+        description: E-mail do usuário (Obrigatório apenas se não for enviado o 
+          número de celular).
+        required: true
+        schema:
+          type: string
+        example: fulano@dominio.com
+      - name: phone
+        in: query
+        description: Número de celular do usuário (Obrigatório apenas se não for
+          enviado o e-mail).
+        required: true
+        schema:
+          type: string
+        example: "17987654321"
+      requestBody:
+        description: Dados do usuário para reenvio do código de confirmação.
+        content:
+          'application/json':
+            schema:
+              required:
+              - email
+              - phone
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                phone:
+                  type: string
+                  example: "17987654321"
+        required: true
+      responses:
+        200:
+          description: Código reenviado com sucesso.
+        404:
+          description: Código não encontrado devido ao usuário já estar ativo ou
+            não existir.
+        422:
+          description: Validação dos parâmetros.
+
+  /auth/registration/forgot-password:
+    post:
+      tags:
+      - Recuperação de Senha
+      summary: Solicitar recuperação de senha do usuário. O usuário deverá se 
+        estar ativo.
+      description: Solicita envio do código de recuperação de senha do usuário 
+        por e-mail ou SMS.
+      operationId: forgotPassword
+      parameters:
+      - name: email
+        in: query
+        description: E-mail do usuário (Obrigatório apenas se não for enviado o 
+          número de celular).
+        required: true
+        schema:
+          type: string
+        example: fulano@dominio.com
+      - name: phone
+        in: query
+        description: Número de celular do usuário (Obrigatório apenas se não for
+          enviado o e-mail).
+        required: true
+        schema:
+          type: string
+        example: "17987654321"
+      requestBody:
+        description: Dados do usuário para envio do código de recuperação de senha.
+        content:
+          'application/json':
+            schema:
+              required:
+              - email
+              - phone
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                phone:
+                  type: string
+                  example: "17987654321"
+        required: true
+      responses:
+        200:
+          description: Recuperação de senha enviada com sucesso.
+        404:
+          description: Usuário não encontrado por não existir ou não estar ativo.
+        422:
+          description: Validação dos parâmetros.
+
+  /auth/registration/reset-password:
+    post:
+      tags:
+      - Recuperação de Senha
+      summary: Recuperar senha do usuário.
+      description: Realiza recuperação de senha do usuário por meio de código de
+        recuperação enviado por e-mail ou SMS.
+      operationId: resetPassword
+      parameters:
+      - name: email
+        in: query
+        description: E-mail do usuário (Obrigatório apenas se não for enviado o
+          número de celular).
+        required: true
+        schema:
+          type: string
+        example: fulano@dominio.com
+      - name: phone
+        in: query
+        description: Número de celular do usuário (Obrigatório apenas se não for
+          enviado o e-mail).
+        required: true
+        schema:
+          type: string
+        example: "17987654321"
+      - name: token
+        in: query
+        description: Código de confirmação (Enviado para o usuário por e-mail ou
+          SMS).
+        required: true
+        schema:
+          type: string
+        example: "952861"
+      - name: password
+        in: query
+        description: Nova senha.
+        required: true
+        schema:
+          type: string
+        example: password
+      - name: password_confirmation
+        in: query
+        description: Confirmação da nova senha.
+        required: true
+        schema:
+          type: string
+        example: password
+      requestBody:
+        description: Dados do usuário para reenvio do código de confirmação
+        content:
+          'application/json':
+            schema:
+              required:
+              - email
+              - password
+              - password_confirmation
+              - phone
+              - token
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                phone:
+                  type: string
+                  example: "17987654321"
+                token:
+                  type: string
+                  example: "952861"
+                password:
+                  type: string
+                  example: password
+                password_confirmation:
+                  type: string
+                  example: password
+        required: true
+      responses:
+        200:
+          description: Senha recuperada com sucesso.
+        403:
+          description: Token de recuperação de senha expirado ou inválido.
+        404:
+          description: Usuário não encontrado por não existir ou não estar ativo.
+        422:
+          description: Validação dos parâmetros.
+     
+  /access-control/permissions:
+    get:
+      tags:
+      - Permissões
+      summary: Listar Permissões
+      description: |-
+        Retorna lista de permissões do sistema.
+        
+        Funções requeridas: `Super Administrador`
+        
+        Permissões requeridas: `Listar Permissões`  
+      operationId: getPermissions
+      parameters:
+        - $ref: '#/components/parameters/paginate'
+        - $ref: '#/components/parameters/conditions'
+        - $ref: '#/components/parameters/or_conditions'
+      responses:
+        200:
+          $ref: '#/components/responses/list_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        422:
+          $ref: '#/components/responses/unprocessable'
+      security:
+        - bearer: []
+          
+  /access-control/permissions/{id}:
+    get:
+      tags:
+      - Permissões
+      summary: Buscar permissão por ID
+      description: |-
+        Retorna única permissão.
+        
+        Funções requeridas: `Super Administrador`
+        
+        Permissões requeridas: `Visualizar Permissão`  
+      operationId: getPermission
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+      responses:
+        200:
+          $ref: '#/components/responses/show_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security: 
+        - bearer: []
+          
+  /access-control/roles:
+    get:
+      tags:
+      - Funções
+      summary: Listar Funções
+      description: |-
+        Retorna lista de permissões do sistema.
+
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Listar Funções`
+      operationId: getRoles
+      parameters:
+        - $ref: '#/components/parameters/paginate'
+        - $ref: '#/components/parameters/conditions'
+        - $ref: '#/components/parameters/or_conditions'
+      responses:
+        200:
+          $ref: '#/components/responses/list_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        422:
+          $ref: '#/components/responses/unprocessable'
+      security:
+      - bearer: []
+      
+    post:
+      tags:
+      - Funções
+      summary: Cadastrar Função
+      description: |-
+        Cadastra nova função.
+
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Cadastrar Função` 
+      operationId: createRole
+      parameters:
+      - name: name
+        in: query
+        description: Nome da função.
+        required: true
+        schema:
+          type: string
+      - name: permissions
+        in: query
+        description: Permissões atreladas a função. Deve ser enviado um array 
+          contedo os IDs das permissões.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+        example: [1, 3, 5]
+      requestBody:
+        description: Dados da nova função.
+        content:
+          'application/json':
+            schema:
+              required:
+              - name
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Colaborador
+                permissions:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]
+        required: true
+      responses:
+        201:
+          $ref: '#/components/responses/created'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        422:
+          $ref: '#/components/responses/unprocessable'
+      security:
+      - bearer: []
+      
+  /access-control/roles/{id}:
+    get:
+      tags:
+      - Funções
+      summary: Buscar função por ID
+      description: |-
+        Retorna única função.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Visualizar Função` 
+      operationId: getRole
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+      responses:
+        200:
+          $ref: '#/components/responses/show_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+      
+    put:
+      tags:
+      - Funções
+      summary: Atualizar Função
+      description: |-
+        Atualiza função existente.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Editar Função` 
+      operationId: updateRole
+      parameters:
+      - $ref: '#/components/parameters/resource_id'
+      - name: name
+        in: query
+        description: Nome da função.
+        required: false
+        schema:
+          type: string
+      - name: permissions
+        in: query
+        description: Permissões atreladas a função. Deve ser enviado um array 
+          contedo os IDs das permissões.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+        example: [1, 3, 5]
+      requestBody:
+        description: Dados da nova função.
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Colaborador
+                permissions:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]
+        required: true
+      responses:
+        200:
+          $ref: '#/components/responses/show_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+      
+    delete:
+      tags:
+      - Funções
+      summary: Deletar Função
+      description: |-
+        Deleta função por ID.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Cadastrar Função` 
+      operationId: deleteRole
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+      responses:
+        200:
+          $ref: '#/components/responses/success_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+      
+  /users:
+    get:
+      tags:
+        - Usuários
+      summary: Listar Usuários
+      description: |-
+        Retorna lista de usuários do sistema.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Listar Usuários` 
+      operationId: getUsers
+      parameters:
+        - $ref: '#/components/parameters/paginate'
+        - $ref: '#/components/parameters/conditions'
+        - $ref: '#/components/parameters/or_conditions'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/relationships'
+        - name: roles
+          in: query
+          description: Nome da função para busca de usuários.
+          required: false
+          schema:
+            type: array
+            items: 
+              type: string
+          example: ['Usuário']
+      responses:
+        200:
+          $ref: '#/components/responses/list_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        422:
+          $ref: '#/components/responses/unprocessable'
+      security:
+        - bearer: []
+        
+    post:
+      tags:
+        - Usuários
+      summary: Cadastrar Usuário
+      description: |-
+        Cadastra novo usuário.
+        
+        Funções requeridas: `Super Administrador`
+        
+        Permissões requeridas: `Cadastrar Usuário`
+      operationId: createUser
+      parameters:
+        - name: name
+          in: query
+          description: Nome do usuário.
+          required: true
+          schema:
+            type: string
+          example: Fulano
+        - name: email
+          in: query
+          description: E-mail do usuário (Obrigatório apenas se não for enviado 
+            o número de celular).
+          required: true
+          schema:
+            type: string
+          example: fulano@dominio.com
+        - name: phone
+          in: query
+          description: Número de celular do usuário (Obrigatório apenas se não 
+            for enviado o e-mail).
+          required: true
+          schema:
+            type: string
+          example: "17987654321"  
+        - name: password
+          in: query
+          description: Senha.
+          required: false
+          schema:
+            type: string
+          example: password
+        - name: password_confirmation
+          in: query
+          description: Confirmação da senha.
+          required: false
+          schema:
+            type: string
+          example: password
+        - name: roles
+          in: query
+          description: Funções concedidas ao usuário. Deve ser enviado um array 
+            contedo os IDs das funções.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: integer
+          example: [1, 3, 5]
+        - name: permissions
+          in: query
+          description: Permissões concedidas ao usuário. Deve ser enviado um array 
+            contedo os IDs das permissões.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: integer
+          example: [1, 3, 5]
+      requestBody:
+        description: Dados do novo usuário.
+        content:
+          'application/json':
+            schema:
+              required:
+              - name
+              - email
+              - cell_phone
+              - password
+              - password_confirmation
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fulano
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                cell_phone:
+                  type: string
+                  example: "17987654321"
+                password:
+                  type: string
+                  example: password
+                password_confirmation:
+                  type: string
+                  example: password
+                roles:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]     
+                permissions:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]    
+      responses:
+          201:
+            $ref: '#/components/responses/created'
+          401:
+            $ref: '#/components/responses/unauthenticated'
+          403:
+            $ref: '#/components/responses/forbidden'
+          422:
+            $ref: '#/components/responses/unprocessable'
+      security:
+        - bearer: []
+        
+  /users/{id}:
+    get:
+      tags:
+        - Usuários
+      summary: Buscar usuário por ID
+      description: |-
+        Retorna único usuário.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Visualizar Usuário` 
+      operationId: getUser
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/relationships'
+      responses:
+        200:
+          $ref: '#/components/responses/show_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+      
+    put:
+      tags:
+        - Usuários
+      summary: Atualizar Usuário
+      description: |-
+        Atualiza usuário existente.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Editar Usuário` 
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+        - name: name
+          in: query
+          description: Nome do usuário.
+          required: false
+          schema:
+            type: string
+          example: Fulano
+        - name: email
+          in: query
+          description: E-mail do usuário - Atributo de autenticação.
+          required: false
+          schema:
+            type: string
+          example: fulano@dominio.com
+        - name: phone
+          in: query
+          description: Número de celular do usuário - Atributo de autenticação.
+          required: false
+          schema:
+            type: string
+          example: "17987654321"  
+        - name: password
+          in: query
+          description: Nova senha do usuário (Atualização de Senha).
+          required: false
+          schema:
+            type: string
+          example: new-password
+        - name: password_confirmation
+          in: query
+          description: Confirmação da nova senha do usuário (Atualização de Senha).
+          required: false
+          schema:
+            type: string
+          example: new-password
+        - name: previous_password
+          in: query
+          description: Senha atual do usuário (Atualização de Senha).
+          required: false
+          schema:
+            type: string
+          example: password
+        - name: avatar
+          in: query
+          description: Imagem de perfil do usuário.
+          required: false
+          schema:
+            type: string
+            format: binary
+        - name: is_active
+          in: query
+          description: |-
+            Status do usuário.
+            
+            Aplicável apenas se o usuário autenticado for um
+            **Super Administrador**.
+          required: false
+          schema:
+            type: boolean
+          example: false  
+        - name: telephones
+          in: query
+          description: Telefones do usuário.
+          required: false
+          schema:
+            type: array
+            items:
+              type: object
+          example:
+            - type: Celular
+              number: "17987654321"
+            - type: Fixo
+              number: "1787654321"
+        - name: roles
+          in: query
+          description: |-
+            Funções concedidas ao usuário. Deve ser enviado um array contedo os
+            IDs das funções.
+            
+            Aplicável apenas se o usuário autenticado for um
+            **Super Administrador**.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: integer
+          example: [1, 3, 5]
+        - name: permissions
+          in: query
+          description: |-
+            Permissões concedidas ao usuário. Deve ser enviado um array contedo 
+            os IDs das permissões.
+            
+            Aplicável apenas se o usuário autenticado for um
+            **Super Administrador**.
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: integer
+          example: [1, 3, 5]
+      requestBody:
+        description: Dados do usuário atualizado.
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fulano
+                email:
+                  type: string
+                  example: fulano@dominio.com
+                cell_phone:
+                  type: string
+                  example: "17987654321"
+                password:
+                  type: string
+                  example: new-password
+                password_confirmation:
+                  type: string
+                  example: new-password
+                previous_password:
+                  type: string
+                  example: new-password
+                is_active:
+                  type: boolean
+                  example: false
+                telephones:
+                  example:
+                    - type: "Celular"
+                      number: "17987654321"
+                    - type: "Fixo"
+                      number: "1787654321"
+                roles:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]     
+                permissions:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 3, 5]
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          $ref: '#/components/responses/show_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+      
+    delete:
+      tags:
+      - Usuários
+      summary: Deletar Usuário
+      description: |-
+        Deleta usuário por ID.
+        
+        Funções requeridas: `Super Administrador`
+
+        Permissões requeridas: `Deletar Função` 
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/resource_id'
+      responses:
+        200:
+          $ref: '#/components/responses/success_ok'
+        401:
+          $ref: '#/components/responses/unauthenticated'
+        403:
+          $ref: '#/components/responses/forbidden'
+        404:
+          $ref: '#/components/responses/not_found'
+      security:
+      - bearer: []
+        
+components:
+  responses:
+    list_ok:
+      description: Lista de recursos.
+    show_ok:
+      description: Dados do recurso.
+    success_ok:
+      description: Operação realizada com sucesso.
+    created:
+      description: Dados do novo recurso.
+    unauthenticated:
+      description: Usuário não autenticado.
+    forbidden:
+      description: Permissão insuficiente para realizar a operação.
+    not_found:
+      description: Recurso não encontrado.
+    unprocessable:
+      description: Parâmetros inválidos.
+      
+  parameters:
+    paginate:
+      in: query
+      name: paginate
+      description: Quantidade de items por página. Se este parâmetro não for 
+        informado, não haverá paginação.
+      required: false
+      schema:
+        type: integer
+      example: 10
+      
+    conditions:
+      in: query
+      name: conditions
+      description: |-
+        Condições de buscas
+        
+        As condições devem seguir o padrão: `nome do campo:operador 
+        (=, <, >, like, etc):valor desejado`.
+        
+        Se houver mais de uma condição, as subsequentes devem ser seguidas por
+        `;`.
+      required: false
+      schema:
+        type: string
+      example: conditions=atributo:=:valor
+      
+    or_conditions:
+      name: or-conditions
+      in: query
+      description: >-
+        Condições de buscas alternativas.
+        
+        Aplica-se as mesmas regras da formação anterior
+      required: false
+      schema:
+        type: string
+      example: or-conditions=atributo:like:%valor%
+      
+    resource_id:
+      name: id
+      in: path
+      description: ID do recurso.
+      required: true
+      schema:
+        type: integer
+      example: 1
+      
+    columns:
+      name: columns
+      in: query
+      description: |-
+        Campos que serão carregados na busca. Devem ser separados por
+        vírgula.
+        
+        Se este parâmetro não for especificado, todos os atritubos serão
+        carregados
+      schema:
+        type: string
+      example: 'name,email'
+      
+    relationships:
+      name: relationships
+      in: query
+      description: |- 
+        Recursos relacionados que serão carregados na busca. Devem ser separados por
+        vírgula.
+        
+        Se este parâmetro não for especificado, todos os relacionamentos serão carregados.
+      required: false
+      schema:
+        type: string
+      example: 'avatar,telephones'
+  
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
