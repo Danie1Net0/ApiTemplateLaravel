@@ -32,10 +32,8 @@ class ShowUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'columns' => ['nullable', 'array'],
-            'columns.*' => ['required', 'string', new CheckIfColumnExistsRule('users')],
-            'relationships' => ['nullable', 'array'],
-            'relationships.*' => ['required', 'string', new CheckIfRelationshipExistsRule(new User())]
+            'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('users')],
+            'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(User::class)],
         ];
     }
 }

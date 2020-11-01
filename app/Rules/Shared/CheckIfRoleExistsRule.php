@@ -4,18 +4,17 @@ namespace App\Rules\Shared;
 
 use App\Repositories\AccessControl\RoleRepositoryEloquent;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CheckIfColumnExistsRule
+ * Class CheckIfRoleExistsRule
  * @package App\Rules\Shared
  */
-class CheckIfColumnExistsRule implements Rule
+class CheckIfRoleExistsRule implements Rule
 {
     /**
-     * @var string
+     * @var RoleRepositoryEloquent
      */
-    private string $tableName;
+    private RoleRepositoryEloquent $roleRepository;
 
     /**
      * @var string
@@ -24,11 +23,11 @@ class CheckIfColumnExistsRule implements Rule
 
     /**
      * Create a new rule instance.
-     * @param string $tableName
+     * @param RoleRepositoryEloquent $roleRepository
      */
-    public function __construct(string $tableName)
+    public function __construct(RoleRepositoryEloquent $roleRepository)
     {
-        $this->tableName = $tableName;
+        $this->roleRepository = $roleRepository;
     }
 
     /**
@@ -40,9 +39,9 @@ class CheckIfColumnExistsRule implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        foreach (explode(',', $value) as $column) {
-            if (!Schema::hasColumn($this->tableName, $column)) {
-                $this->value = $column;
+        foreach (explode(',', $value) as $role) {
+            if (is_null($this->roleRepository->findWhere(['name' => $role])->first())) {
+                $this->value = $role;
                 return false;
             }
         }
@@ -57,6 +56,6 @@ class CheckIfColumnExistsRule implements Rule
      */
     public function message(): string
     {
-        return "A coluna {$this->value} não existe.";
+        return "A função {$this->value} não existe.";
     }
 }

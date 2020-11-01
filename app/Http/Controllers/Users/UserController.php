@@ -41,15 +41,8 @@ class UserController extends Controller
      */
     public function index(IndexUserRequest $request)
     {
-        $users = $this->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles', 'permissions'])
-            ->scopeQuery(function ($query) use ($request) {
-                return $query->where($request->search ?? [])->role($request->roles ?? 'Usuário');
-            });
-
-        $users = $request->paginate ?
-            $users->paginate($request->paginate, $request->columns ?? ['*']) :
-            $users->get($request->columns ?? ['*']);
+        $users = $this->userRepository->scopeQuery(fn () => filterResources($this->userRepository, $request));
+        $users = getResources($users, $request);
 
         return UserResource::collection($users)->additional(['meta' => 'Usuários recuperados com sucesso!']);
     }
@@ -72,8 +65,8 @@ class UserController extends Controller
     public function show(ShowUserRequest $request, int $id): UserResource
     {
         $user = $this->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles', 'permissions'])
-            ->find($id, $request->columns ?? ['*']);
+            ->with($request->has('relationships') ? explode(',', $request->get('relationships')) : [])
+            ->find($id, explode(',', $request->get('columns')) ?? ['*']);
 
         return (new UserResource($user))->additional(['meta' => 'Usuário recuperado com sucesso!']);
     }
@@ -85,10 +78,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, int $id)
     {
-        $user = $this->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles'])
-            ->update($request->all(), $id);
-
+        $user = $this->userRepository->update($request->all(), $id);
         return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário atualizado com sucesso!']]);
     }
 

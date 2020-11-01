@@ -25,7 +25,6 @@ class Image extends Model
      * @var string[]
      */
     protected $visible = [
-        'id',
         'path',
     ];
 

@@ -4,27 +4,28 @@ namespace App\Rules\Shared;
 
 use BadMethodCallException;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Database\Eloquent\Model;
 
 class CheckIfRelationshipExistsRule implements Rule
 {
     /**
-     * @var string
+     * @var Model
      */
-    private $model;
+    private Model $model;
 
     /**
      * @var string
      */
-    private $value;
+    private string $value;
 
     /**
      * Create a new rule instance.
      *
-     * @param object $model
+     * @param string $model
      */
-    public function __construct(object $model)
+    public function __construct(string $model)
     {
-        $this->model = $model;
+        $this->model = app($model);
     }
 
     /**
@@ -34,13 +35,15 @@ class CheckIfRelationshipExistsRule implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
-        try {
-            $this->model->has("{$value}");
-        } catch (BadMethodCallException $exception) {
-            $this->value = $value;
-            return false;
+        foreach (explode(',', $value) as $relationship) {
+            try {
+                $this->model->has($relationship);
+            } catch (BadMethodCallException $exception) {
+                $this->value = $relationship;
+                return false;
+            }
         }
 
         return true;
@@ -51,7 +54,7 @@ class CheckIfRelationshipExistsRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return "O relacionamento $this->value não existe.";
     }

@@ -7,7 +7,6 @@ use App\Models\Shared\Image;
 use App\Models\Shared\Telephone;
 use App\Traits\Shared\HasImages;
 use App\Traits\Shared\HasTelephones;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -49,12 +48,11 @@ class User extends Authenticatable
         'name',
         'email',
         'cell_phone',
-        'password',
         'is_active',
         'telephones',
         'roles',
         'permissions',
-        'avatar_url',
+        'avatar',
         'is_active',
     ];
 
@@ -71,13 +69,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'is_active' => 'bool',
-    ];
-
-    /**
-     * @var string[]
-     */
-    protected $appends = [
-        'avatar_url',
     ];
 
     /**
@@ -108,15 +99,5 @@ class User extends Authenticatable
     public function passwordReset(): HasOne
     {
         return $this->hasOne(PasswordReset::class);
-    }
-
-    /**
-     * Accessor.
-     *
-     * @return string
-     */
-    public function getAvatarUrlAttribute(): string
-    {
-        return $this->avatar()->first()->path;
     }
 }
