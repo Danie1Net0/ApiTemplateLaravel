@@ -41,7 +41,10 @@ class UserController extends Controller
      */
     public function index(IndexUserRequest $request)
     {
-        $users = $this->userRepository->scopeQuery(fn () => filterResources($this->userRepository, $request));
+        $users = $this->userRepository->scopeQuery(function ($query) use ($request) {
+            $query = filterResources($this->userRepository, $request);
+            $query->role($request->has('roles') ? explode(',', $request->get('roles')) : 'Usuário');
+        });
         $users = getResources($users, $request);
 
         return UserResource::collection($users)->additional(['meta' => 'Usuários recuperados com sucesso!']);

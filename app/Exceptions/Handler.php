@@ -62,7 +62,9 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof DeleteResourceException) {
-            return new MessageResponseResource($exception->getMessage());
+            return (new MessageResponseResource($exception->getMessage()))
+                ->response()
+                ->setStatusCode(Response::HTTP_FORBIDDEN);;
         }
 
         if ($exception instanceof ValidationException) {
