@@ -8,7 +8,7 @@ use App\Http\Resources\Shared\MessageResponseResource;
 use App\Notifications\Auth\ResetPasswordNotification;
 use App\Repositories\Implementations\Auth\PasswordResetRepositoryEloquent;
 use App\Repositories\Implementations\Users\UserRepositoryEloquent;
-use App\User;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

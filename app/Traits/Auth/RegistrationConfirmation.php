@@ -8,7 +8,7 @@ use App\Http\Resources\Shared\MessageResponseResource;
 use App\Http\Resources\Users\UserResource;
 use App\Notifications\Auth\RegistrationConfirmationNotification;
 use App\Repositories\Implementations\Users\UserRepositoryEloquent;
-use App\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;

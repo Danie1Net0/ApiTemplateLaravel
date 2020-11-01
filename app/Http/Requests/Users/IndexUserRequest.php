@@ -7,7 +7,7 @@ use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
 use App\Rules\Shared\CheckIfRoleExistsRule;
 use App\Rules\Shared\CheckSearchParamsRule;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 

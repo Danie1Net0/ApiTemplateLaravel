@@ -5,7 +5,7 @@ namespace App\Repositories\Implementations\Users;
 use App\Criteria\Users\UpdateUserCriteria;
 use App\Notifications\Auth\RegistrationConfirmationNotification;
 use App\Repositories\Contracts\Users\UserRepository;
-use App\User;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;

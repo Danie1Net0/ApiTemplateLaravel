@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
@@ -8,7 +10,7 @@ use Spatie\Permission\Models\Role;
 class RolesAndPermissionsSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */

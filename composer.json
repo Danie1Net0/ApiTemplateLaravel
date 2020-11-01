@@ -12,8 +12,8 @@
         "doctrine/dbal": "^2.12",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "^7.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "laravel/framework": "^8.0",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.0",
         "lucascudo/laravel-pt-br-localization": "^1.1",
@@ -21,11 +21,11 @@
         "spatie/laravel-permission": "^3.13"
     },
     "require-dev": {
-        "facade/ignition": "^2.0",
+        "facade/ignition": "^2.3.6",
         "fzaninotto/faker": "^1.9.1",
         "mockery/mockery": "^1.3.1",
-        "nunomaduro/collision": "^4.1",
-        "phpunit/phpunit": "^8.5"
+        "nunomaduro/collision": "^5.0",
+        "phpunit/phpunit": "^9.0"
     },
     "config": {
         "optimize-autoloader": true,
@@ -39,12 +39,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
         },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ],
         "files":  [
             "app/Helpers/helpers.php"
         ]

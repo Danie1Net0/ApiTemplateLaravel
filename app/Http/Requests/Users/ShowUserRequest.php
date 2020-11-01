@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users;
 
 use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
