@@ -457,11 +457,21 @@ paths:
         Funções requeridas: `Super Administrador`
         
         Permissões requeridas: `Listar Permissões`  
+        
+        Colunas disponíveis:
+          * id
+          * name
+          
+        Relacionamentos disponíveis:
+          * roles
       operationId: getPermissions
       parameters:
         - $ref: '#/components/parameters/paginate'
         - $ref: '#/components/parameters/conditions'
         - $ref: '#/components/parameters/or_conditions'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/relationships'
       responses:
         200:
           $ref: '#/components/responses/list_ok'
@@ -485,9 +495,18 @@ paths:
         Funções requeridas: `Super Administrador`
         
         Permissões requeridas: `Visualizar Permissão`  
+        
+        Colunas disponíveis:
+          * id
+          * name
+          
+        Relacionamentos disponíveis:
+          * roles
       operationId: getPermission
       parameters:
         - $ref: '#/components/parameters/resource_id'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/relationships'
       responses:
         200:
           $ref: '#/components/responses/show_ok'
@@ -511,11 +530,21 @@ paths:
         Funções requeridas: `Super Administrador`
 
         Permissões requeridas: `Listar Funções`
+        
+        Colunas disponíveis:
+          * id
+          * name
+          
+        Relacionamentos disponíveis:
+          * permissions
       operationId: getRoles
       parameters:
         - $ref: '#/components/parameters/paginate'
         - $ref: '#/components/parameters/conditions'
         - $ref: '#/components/parameters/or_conditions'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/relationships'
+        - $ref: '#/components/parameters/order'
       responses:
         200:
           $ref: '#/components/responses/list_ok'
@@ -598,9 +627,18 @@ paths:
         Funções requeridas: `Super Administrador`
 
         Permissões requeridas: `Visualizar Função` 
+        
+        Colunas disponíveis:
+          * id
+          * name
+          
+        Relacionamentos disponíveis:
+          * roles
       operationId: getRole
       parameters:
         - $ref: '#/components/parameters/resource_id'
+        - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/relationships'
       responses:
         200:
           $ref: '#/components/responses/show_ok'
@@ -707,22 +745,34 @@ paths:
         Funções requeridas: `Super Administrador`
 
         Permissões requeridas: `Listar Usuários` 
+        
+        Colunas disponíveis:
+          * id
+          * name
+          * email
+          * cell_phone
+          * is_active
+          
+        Relacionamentos disponíveis:
+          * avatar
+          * telephones
+          * roles
+          * permissions
       operationId: getUsers
       parameters:
         - $ref: '#/components/parameters/paginate'
         - $ref: '#/components/parameters/conditions'
         - $ref: '#/components/parameters/or_conditions'
         - $ref: '#/components/parameters/columns'
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/relationships'
         - name: roles
           in: query
           description: Nome da função para busca de usuários.
           required: false
           schema:
-            type: array
-            items: 
-              type: string
-          example: ['Usuário']
+            type: string
+          example: 'Usuário,Administrador'
       responses:
         200:
           $ref: '#/components/responses/list_ok'
@@ -867,6 +917,19 @@ paths:
         Funções requeridas: `Super Administrador`
 
         Permissões requeridas: `Visualizar Usuário` 
+        
+        Colunas disponíveis:
+          * id
+          * name
+          * email
+          * cell_phone
+          * is_active
+          
+        Relacionamentos disponíveis:
+          * avatar
+          * telephones
+          * roles
+          * permissions
       operationId: getUser
       parameters:
         - $ref: '#/components/parameters/resource_id'
@@ -1180,6 +1243,15 @@ components:
       schema:
         type: string
       example: 'avatar,telephones'
+      
+    order:
+      name: order
+      in: query
+      description: Ordenação ascendente *(asc)* ou descendente *(desc)* de recursos.
+      required: false
+      schema:
+        type: string
+      example: 'name:asc'
   
   securitySchemes:
     bearer:
