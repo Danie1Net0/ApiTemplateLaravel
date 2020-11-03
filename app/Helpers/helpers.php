@@ -33,7 +33,10 @@ function tokenGenerate(BaseRepository $repository, string $tokenName, int $lengt
  */
 function getResources(BaseRepository $repository, Request $request, bool $searchByUserRole = false): BaseRepository
 {
-    return $repository->scopeQuery(function ($query) use ($request, $searchByUserRole) {
+    return $repository->scopeQuery(function ($query) use ($repository, $request, $searchByUserRole) {
+        $model = $repository->makeModel();
+        $query = $model->newQuery();
+
         if ($request->has('conditions')) {
             foreach (explode(';', $request->get('conditions')) as $conditions) {
                 $params = explode(':', $conditions);
@@ -52,6 +55,15 @@ function getResources(BaseRepository $repository, Request $request, bool $search
             $query->role($request->has('roles') ? explode(',', $request->get('roles')) : 'Usuário');
         }
 
+        if ($request->has('relationships')) {
+            $query->with(explode(',', $request->get('relationships')));
+        }
+
+        if ($request->has('order')) {
+            $order = explode(':', $request->get('order'));
+            $query->orderBy($order[0], $order[1] ?? 'asc');
+        }
+
         return $query;
     });
 }
@@ -67,15 +79,6 @@ function getResources(BaseRepository $repository, Request $request, bool $search
 function filterResources(BaseRepository $repository, Request $request, bool $searchByUserRole = false)
 {
     $resources = getResources($repository, $request, $searchByUserRole);
-
-    if ($request->has('relationships')) {
-        $resources->with(explode(',', $request->get('relationships')));
-    }
-
-    if ($request->has('order')) {
-        $order = explode(':', $request->get('order'));
-        $resources->orderBy($order[0], $order[1] ?? 'asc');
-    }
 
     $columns = $request->has('columns') ? explode(',', $request->get('columns')) : ['*'];
 
