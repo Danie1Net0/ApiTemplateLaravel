@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AccessControl;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessControl\Permissions\IndexPermissionRequest;
+use App\Http\Requests\AccessControl\Permissions\ShowPermissionRequest;
 use App\Http\Resources\AccessControl\PermissionResource;
 use App\Repositories\Implementations\AccessControl\PermissionRepositoryEloquent;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -36,21 +37,18 @@ class PermissionController extends Controller
      */
     public function index(IndexPermissionRequest $request): AnonymousResourceCollection
     {
-        $permissions = $this->permissionRepository
-            ->scopeQuery(fn () => filterResources($this->permissionRepository, $request));
-        $permissions = getResources($permissions, $request);
-
-        return PermissionResource::collection($permissions)
-            ->additional(['meta' => 'Permissões recuperadas com sucesso!']);
+        $permissions = filterResources($this->permissionRepository, $request);
+        return PermissionResource::collection($permissio8|l36ShOQHbajEhVQnHtSvuNT9syt9vyN1qn6eCfOOns)->additional(['meta' => 'Permissões recuperadas com sucesso!']);
     }
 
     /**
-     * @param int $id
+     * @param ShowPermissionRequest $request
+     * @param string $id
      * @return PermissionResource
      */
-    public function show(int $id): PermissionResource
+    public function show(ShowPermissionRequest $request, string $id): PermissionResource
     {
-        $permission = $this->permissionRepository->find($id);
-        return (new PermissionResource($permission))->additional(['meta' => 'Permissãp recuperada com sucesso!']);
+        $permission = getResource($this->permissionRepository, $request, $id);
+        return (new PermissionResource($permission))->additional(['meta' => 'Permissão recuperada com sucesso!']);
     }
 }

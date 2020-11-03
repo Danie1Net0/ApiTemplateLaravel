@@ -36,8 +36,9 @@ class ConfirmationRegistrationRequest extends FormRequest
             'token' => ['required', 'string', 'min:6', 'max:6', 'exists:users,confirmation_token'],
             'password' => [Rule::requiredIf(function () use ($userRepository) {
                 $user = $userRepository->scopeQuery(function ($query)  {
-                    return $query->where('email', $this->get('email'))
-                        ->orWhere('cell_phone', $this->get('phone'));
+                    return $this->has('email') ?
+                        $query->where('email', $this->get('email')) :
+                        $query->orWhere('cell_phone', $this->get('phone'));
                 })->first();
 
                 return $user ? is_null($user->password) : false;

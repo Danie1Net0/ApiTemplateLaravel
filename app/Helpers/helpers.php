@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
  * Gera token único.
@@ -26,37 +24,36 @@ function tokenGenerate(BaseRepository $repository, string $tokenName, int $lengt
 }
 
 /**
- * Realiza filtragem de recursos.
+ * Obtém recursos através do repositório.
  *
  * @param BaseRepository $repository
  * @param Request $request
- * @return Builder
- * @throws RepositoryException
+ * @param bool $searchByUserRole
+ * @return BaseRepository
  */
-function filterResources(BaseRepository  $repository, Request $request): Builder
+function getResources(BaseRepository $repository, Request $request, bool $searchByUserRole = false): BaseRepository
 {
-    $model = $repository->makeModel();
-    $query = $model->newQuery();
-
-    if ($request->has('conditions')) {
-        foreach (explode(';', $request->get('conditions')) as $conditions) {
-            $params = explode(':', $conditions);
-            $query->where($params[0], $params[1], $params[2]);
+    return $repository->scopeQuery(function ($query) use ($request, $searchByUserRole) {
+        if ($request->has('conditions')) {
+            foreach (explode(';', $request->get('conditions')) as $conditions) {
+                $params = explode(':', $conditions);
+                $query->where($params[0], $params[1], $params[2]);
+            }
         }
-    }
 
-    if ($request->has('or-conditions')) {
-        foreach (explode(';', $request->get('or-conditions')) as $orConditions) {
-            $params = explode(':', $orConditions);
-            $query->orWhere($params[0], $params[1], $params[2]);
+        if ($request->has('or-conditions')) {
+            foreach (explode(';', $request->get('or-conditions')) as $orConditions) {
+                $params = explode(':', $orConditions);
+                $query->orWhere($params[0], $params[1], $params[2]);
+            }
         }
-    }
 
-    if ($request->has('relationships')) {
-        $query->with(explode(',', $request->get('relationships')));
-    }
+        if ($searchByUserRole) {
+            $query->role($request->has('roles') ? explode(',', $request->get('roles')) : 'Usuário');
+        }
 
-    return $query;
+        return $query;
+    });
 }
 
 /**
@@ -64,13 +61,45 @@ function filterResources(BaseRepository  $repository, Request $request): Builder
  *
  * @param BaseRepository $repository
  * @param Request $request
+ * @param bool $searchByUserRole
  * @return LengthAwarePaginator|Collection|mixed
  */
-function getResources(BaseRepository $repository, Request $request)
+function filterResources(BaseRepository $repository, Request $request, bool $searchByUserRole = false)
 {
+    $resources = getResources($repository, $request, $searchByUserRole);
+
+    if ($request->has('relationships')) {
+        $resources->with(explode(',', $request->get('relationships')));
+    }
+
     $columns = $request->has('columns') ? explode(',', $request->get('columns')) : ['*'];
 
+    if (!in_array('id', $columns)) {
+        array_unshift($columns, 'id');
+    }
+
     return $request->get('paginate') ?
-        $repository->paginate($request->get('paginate'), $columns) :
-        $repository->get($columns);
+        $resources->paginate($request->get('paginate'), $columns) :
+        $resources->get($columns);
 }
+
+/**
+ * Obtém recurso único através do repositório.
+ *
+ * @param BaseRepository $repository
+ * @param Request $request
+ * @param string $id
+ * @return LengthAwarePaginator|Collection|mixed
+ */
+function getResource(BaseRepository $repository, Request $request, string $id)
+{
+    $relationships = $request->has('relationships') ? explode(',', $request->get('relationships')) : [];
+    $columns = $request->has('columns') ? explode(',', $request->get('columns')) : ['*'];
+
+    if (!in_array('id', $columns)) {
+        array_unshift($columns, 'id');
+    }
+
+    return $repository->with($relationships)->find($id, $columns);
+}
+

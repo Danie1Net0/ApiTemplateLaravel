@@ -7,6 +7,7 @@ use App\Models\Shared\Image;
 use App\Models\Shared\Telephone;
 use App\Traits\Shared\HasImages;
 use App\Traits\Shared\HasTelephones;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -22,12 +23,22 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasImages, HasRoles, HasTelephones, Notifiable;
+    use HasApiTokens, HasFactory, HasImages, HasRoles, HasTelephones, Notifiable, Uuid;
 
     /**
      * @var string
      */
     protected $guard_name = 'api';
+
+    /**
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * @var string[]

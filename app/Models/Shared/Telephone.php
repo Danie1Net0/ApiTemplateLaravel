@@ -2,6 +2,7 @@
 
 namespace App\Models\Shared;
 
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -11,6 +12,18 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Telephone extends Model
 {
+    use Uuid;
+
+    /**
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * @var bool
+     */
+    public $incrementing = false;
+
     /**
      * @var string[]
      */

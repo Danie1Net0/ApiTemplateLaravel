@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\AccessControl\Permissions;
 
+use App\Models\AccessControl\Permission;
+use App\Rules\Shared\CheckIfColumnExistsRule;
+use App\Rules\Shared\CheckIfRelationshipExistsRule;
 use App\Rules\Shared\CheckSearchParamsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +36,8 @@ class IndexPermissionRequest extends FormRequest
             'paginate' => ['nullable', 'integer', 'min:1'],
             'conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
             'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
+            'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('users')],
+            'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(Permission::class)],
         ];
     }
 }

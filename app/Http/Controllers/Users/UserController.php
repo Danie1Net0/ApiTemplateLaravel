@@ -39,14 +39,9 @@ class UserController extends Controller
      * @param IndexUserRequest $request
      * @return AnonymousResourceCollection
      */
-    public function index(IndexUserRequest $request)
+    public function index(IndexUserRequest $request): AnonymousResourceCollection
     {
-        $users = $this->userRepository->scopeQuery(function ($query) use ($request) {
-            $query = filterResources($this->userRepository, $request);
-            $query->role($request->has('roles') ? explode(',', $request->get('roles')) : 'Usuário');
-        });
-        $users = getResources($users, $request);
-
+        $users = filterResources($this->userRepository, $request, true);
         return UserResource::collection($users)->additional(['meta' => 'Usuários recuperados com sucesso!']);
     }
 
@@ -62,35 +57,32 @@ class UserController extends Controller
 
     /**
      * @param ShowUserRequest $request
-     * @param int $id
+     * @param string $id
      * @return UserResource
      */
-    public function show(ShowUserRequest $request, int $id): UserResource
+    public function show(ShowUserRequest $request, string $id): UserResource
     {
-        $user = $this->userRepository
-            ->with($request->has('relationships') ? explode(',', $request->get('relationships')) : [])
-            ->find($id, explode(',', $request->get('columns')) ?? ['*']);
-
+        $user = getResource($this->userRepository, $request, $id);
         return (new UserResource($user))->additional(['meta' => 'Usuário recuperado com sucesso!']);
     }
 
     /**
      * @param UpdateUserRequest $request
-     * @param int $id
+     * @param string $id
      * @return UserResource
      */
-    public function update(UpdateUserRequest $request, int $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
         $user = $this->userRepository->update($request->all(), $id);
         return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário atualizado com sucesso!']]);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return MessageResponseResource
      * @throws RepositoryException
      */
-    public function destroy(int $id): MessageResponseResource
+    public function destroy(string $id): MessageResponseResource
     {
         $this->userRepository->delete($id);
         return new MessageResponseResource('Usuário removido com sucesso!');

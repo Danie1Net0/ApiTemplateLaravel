@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\AccessControl\Permission;
+use App\Models\AccessControl\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Route;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {

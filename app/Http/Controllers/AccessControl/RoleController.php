@@ -6,6 +6,7 @@ use App\Exceptions\DeleteResourceException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessControl\Roles\CreateRoleRequest;
 use App\Http\Requests\AccessControl\Roles\IndexRoleRequest;
+use App\Http\Requests\AccessControl\Roles\ShowRoleRequest;
 use App\Http\Requests\AccessControl\Roles\UpdateRoleRequest;
 use App\Http\Resources\AccessControl\RoleResource;
 use App\Http\Resources\Shared\MessageResponseResource;
@@ -42,11 +43,8 @@ class RoleController extends Controller
      */
     public function index(IndexRoleRequest $request): AnonymousResourceCollection
     {
-        $roles = $this->roleRepository->scopeQuery(fn () => filterResources($this->roleRepository, $request));
-        $roles = getResources($roles, $request);
-
-        return RoleResource::collection($roles)
-            ->additional(['meta' => ['message' => 'Funções recuperadas com sucesso!']]);
+        $roles = filterResources($this->roleRepository, $request);
+        return RoleResource::collection($roles)->additional(['meta' => ['message' => 'Funções recuperadas com sucesso!']]);
     }
 
     /**
@@ -61,37 +59,38 @@ class RoleController extends Controller
     }
 
     /**
-     * @param $id
+     * @param ShowRoleRequest $request
+     * @param string $id
      * @return RoleResource
      */
-    public function show(int $id): RoleResource
+    public function show(ShowRoleRequest $request, string $id): RoleResource
     {
-        $role = $this->roleRepository->find($id);
+        $role = getResource($this->roleRepository, $request, $id);
         return (new RoleResource($role))->additional(['meta' => ['message' => 'Função recuperada com sucesso!']]);
     }
 
     /**
      * @param UpdateRoleRequest $request
-     * @param int $id
+     * @param string $id
      * @return RoleResource
      * @throws RepositoryException
      */
-    public function update(UpdateRoleRequest $request, int $id)
+    public function update(UpdateRoleRequest $request, string $id)
     {
         $role = $this->roleRepository->update($request->all(), $id);
-        return (new RoleResource($role))->additional(['data' => ['message' => 'Função atualizada com sucesso!']]);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função atualizada com sucesso!']]);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return MessageResponseResource
-     * @throws Exception
+     * @throws DeleteResourceException
      */
-    public function destroy(int $id): MessageResponseResource
+    public function destroy(string $id): MessageResponseResource
     {
         try {
             $this->roleRepository->delete($id);
-            return new MessageResponseResource(['success' => true, 'message' => 'Função removida com successo!']);
+            return new MessageResponseResource('Função removida com successo!');
         } catch (Exception $exception) {
             throw new DeleteResourceException($exception->getMessage());
         }

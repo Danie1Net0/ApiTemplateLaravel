@@ -47,9 +47,9 @@ class UpdateUserRequest extends FormRequest
             'avatar' => ['nullable', 'image', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
             'roles' => ['nullable', 'array'],
-            'roles.*' => ['required', 'integer', 'exists:roles,id'],
+            'roles.*' => ['required', 'string', 'exists:roles,id'],
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['required', 'integer', 'exists:permissions,id'],
+            'permissions.*' => ['required', 'string', 'exists:permissions,id'],
         ];
     }
 }
