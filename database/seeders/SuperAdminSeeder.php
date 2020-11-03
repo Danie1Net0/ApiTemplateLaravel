@@ -1,13 +1,15 @@
 <?php
 
-use App\User;
+namespace Database\Seeders;
+
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class SuperAdminSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */
@@ -19,7 +21,7 @@ class SuperAdminSeeder extends Seeder
                 'email' => 'admin@admin.com',
                 'password' => Hash::make('superadmin'),
                 'is_active' => true
-            ])->assignRole('Super Administrador');
+            ])->assignRole('Super Administrador')->avatar()->create();
         }
     }
 }

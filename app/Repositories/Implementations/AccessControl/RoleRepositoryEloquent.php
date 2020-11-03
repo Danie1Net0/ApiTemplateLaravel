@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Repositories\AccessControl;
+namespace App\Repositories\Implementations\AccessControl;
 
+use App\Models\AccessControl\Role;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -14,12 +15,11 @@ use Prettus\Repository\Events\RepositoryEntityDeleting;
 use Prettus\Repository\Events\RepositoryEntityUpdated;
 use Prettus\Repository\Events\RepositoryEntityUpdating;
 use Prettus\Repository\Exceptions\RepositoryException;
-use Spatie\Permission\Models\Role;
 use Exception;
 
 /**
- * Class RoleRepositoryEloquent.
- * @package namespace App\Repositories\AccessControl;
+ * Class RoleRepositoryEloquent
+ * @package App\Repositories\Implementations\AccessControl
  */
 class RoleRepositoryEloquent extends BaseRepository implements RoleRepository
 {

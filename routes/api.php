@@ -14,54 +14,58 @@ use Illuminate\Support\Facades\Route;
 */
 
 /**
- * Auth Routes
+ * API Version 1
  */
-Route::prefix('auth')->namespace('Auth')->group(function () {
+Route::prefix('v1')->group(function () {
     /**
-     * Login Routes
+     * Auth Routes
      */
-    Route::post('login', 'LoginController@login');
-    Route::post('logout', 'LoginController@logout');
+    Route::prefix('auth')->group(function () {
+        /**
+         * Login Routes
+         */
+        Route::namespace('Auth')->group(function () {
+            Route::post('login', 'LoginController@login');
+            Route::post('logout', 'LoginController@logout');
+        });
 
-    /**
-     * Password Reset Routes
-     */
-    Route::prefix('password')->group(function () {
-        Route::post('request', 'ResetPasswordController@request');
-        Route::put('reset', 'ResetPasswordController@reset');
+        /**
+         * Password Reset Routes
+         */
+        Route::namespace('Auth')->group(function () {
+            Route::post('forgot-password', 'ResetPasswordController@request');
+            Route::put('reset-password', 'ResetPasswordController@reset');
+        });
+
+        /**
+         * Registration Routes
+         */
+        Route::prefix('registration')->group(function () {
+            /**
+             * Registration Routes
+             */
+            Route::post('/', 'Users\UserController@store');
+
+            /**
+             * Verification Routes
+             */
+            Route::prefix('confirmation')->namespace('Auth')->group(function () {
+                Route::post('/', 'VerificationController@confirmation');
+                Route::post('resend-code', 'VerificationController@resendCode')->name('resend_verification');
+            });
+        });
     });
-});
-
-/**
- * Registration Routes
- */
-Route::prefix('registration')->group(function () {
-    /**
-     * Registration Routes
-     */
-    Route::post('users', 'Users\UserController@store');
 
     /**
-     * Verification Routes
+     * Access Control Routes
      */
-    Route::prefix('verify')->namespace('Auth')->group(function () {
-        Route::post('', 'VerificationController@verifyEmail');
-        Route::post('resend', 'VerificationController@resend')->name('resend_verification');
-        Route::get('token', 'VerificationController@verifyToken');
+    Route::namespace('AccessControl')->prefix('access-control')->group(function () {
+        Route::apiResource('roles', 'RoleController');
+        Route::apiResource('permissions', 'PermissionController')->only(['index', 'show']);
     });
-});
 
-/**
- * Access Control Routes
- */
-Route::namespace('AccessControl')->group(function () {
-    Route::resource('roles', 'RoleController');
-    Route::resource('permissions', 'PermissionController')->only(['index', 'show']);
-});
-
-/**
- * Users Routes
- */
-Route::namespace('Users')->group(function () {
-    Route::resource('users', 'UserController');
+    /**
+     * Users Routes
+     */
+    Route::apiResource('users', 'Users\UserController');
 });

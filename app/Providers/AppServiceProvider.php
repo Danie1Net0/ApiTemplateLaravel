@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Broadcasting\SmsChannel;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        Notification::extend('sms', fn ($app) => new SmsChannel());
     }
 
     /**
@@ -23,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if (config('app.env') === 'production') {
+            $this->app['request']->server->set('HTTPS', true);
+        }
     }
 }

@@ -80,7 +80,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'pt_BR',
 
     /*
     |--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'pt_BR',
 
     /*
     |--------------------------------------------------------------------------
@@ -101,12 +101,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | This locale will be used by the Faker PHP library when generating fake
-    | data for your database seeds. For example, this will be used to get
+    | data for your database seeders. For example, this will be used to get
     | localized telephone numbers, street address information and more.
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'pt_BR',
 
     /*
     |--------------------------------------------------------------------------

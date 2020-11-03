@@ -19,7 +19,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Editar Usuário');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
@@ -32,12 +32,14 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($this->user)],
+            'cell_phone' => ['nullable', 'string', 'size:11', Rule::unique('users')->ignore($this->user)],
             'password' => ['nullable', 'confirmed'],
             'previous_password' => [Rule::requiredIf(function () {
                 return $this->request->has('password');
             }), function ($attribute, $value, $fail) {
-                if (!password_verify($value, auth()->user()->getAuthPassword()))
+                if (!password_verify($value, auth()->user()->getAuthPassword())) {
                     $fail('A senha atual não corresponde com o valor informado.');
+                }
             }],
             'telephones' => ['nullable', 'array'],
             'telephones.*.number' => ['required', 'string', 'max:15'],
@@ -45,9 +47,9 @@ class UpdateUserRequest extends FormRequest
             'avatar' => ['nullable', 'image', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
             'roles' => ['nullable', 'array'],
-            'roles.*' => ['required', 'integer', 'exists:roles,id'],
+            'roles.*' => ['required', 'string', 'exists:roles,id'],
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['required', 'integer', 'exists:permissions,id']
+            'permissions.*' => ['required', 'string', 'exists:permissions,id'],
         ];
     }
 }

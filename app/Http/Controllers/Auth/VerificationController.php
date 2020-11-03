@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Traits\Auth\VerifiesEmails;
+use App\Traits\Auth\RegistrationConfirmation;
 
 /**
  * Class VerificationController
@@ -11,5 +11,5 @@ use App\Traits\Auth\VerifiesEmails;
  */
 class VerificationController extends Controller
 {
-    use VerifiesEmails;
+    use RegistrationConfirmation;
 }

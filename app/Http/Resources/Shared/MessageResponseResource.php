@@ -12,6 +12,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class MessageResponseResource extends JsonResource
 {
     /**
+     * MessageResponseResource constructor.
+     * @param $resource
+     */
+    public function __construct($resource)
+    {
+        parent::__construct($resource);
+        JsonResource::withoutWrapping();
+    }
+
+    /**
      * Transform the resource into an array.
      *
      * @param Request $request
@@ -19,6 +29,8 @@ class MessageResponseResource extends JsonResource
      */
     public function toArray($request)
     {
-        return $this->resource;
+        return [
+            'message' => $this->resource
+        ];
     }
 }

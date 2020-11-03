@@ -2,9 +2,13 @@
 
 namespace App\Http\Requests\Users;
 
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
+use App\Rules\Shared\CheckOrderParamRule;
 use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
-use App\User;
+use App\Rules\Shared\CheckIfRoleExistsRule;
+use App\Rules\Shared\CheckSearchParamsRule;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,26 +25,25 @@ class IndexUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Listar Usuário');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param RoleRepositoryEloquent $roleRepository
      * @return array
      */
-    public function rules()
+    public function rules(RoleRepositoryEloquent $roleRepository)
     {
         return [
             'paginate' => ['nullable', 'integer', 'min:1'],
-            'search' => ['nullable', 'array'],
-            'search.*' => ['required', 'min:2', 'max:3'],
-            'columns' => ['nullable', 'array'],
-            'columns.*' => ['required', 'string', new CheckIfColumnExistsRule('users')],
-            'relationships' => ['nullable', 'array'],
-            'relationships.*' => ['required', 'string', new CheckIfRelationshipExistsRule(new User())],
-            'roles' => ['nullable', 'array'],
-            'roles.*' => ['required', 'string', 'exists:roles,name']
+            'conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
+            'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
+            'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('users')],
+            'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(User::class)],
+            'order' => ['nullable', 'string', new CheckOrderParamRule('users')],
+            'roles' => ['nullable', 'string', new CheckIfRoleExistsRule($roleRepository)],
         ];
     }
 }

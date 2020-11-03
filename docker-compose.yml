@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  api:
+    image: ambientum/php:7.4-nginx
+    container_name: base_api
+    restart: always
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 8008:8080
+      - 450:443
+    networks:
+      - base_network
+    depends_on:
+      - pgsql
+
+  pgsql:
+    image: mdillon/postgis
+    container_name: base_db
+    restart: always
+    networks:
+      - base_network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+    env_file:
+      - .db.env
+
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: base_swagger_editor
+    restart: always
+    volumes:
+      - ./storage/api-docs:/tmp
+    ports:
+      - 8080:8080
+    environment:
+      SWAGGER_FILE: /tmp/openapi.yaml
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: base_swagger_ui
+    restart: always
+    volumes:
+      - ./storage/api-docs:/usr/share/nginx/html/swagger
+    ports:
+      - 8081:8080
+    environment:
+      URL: /swagger/openapi.yaml
+
+volumes:
+  pgdata:
+
+networks:
+  base_network:
+    driver: bridge

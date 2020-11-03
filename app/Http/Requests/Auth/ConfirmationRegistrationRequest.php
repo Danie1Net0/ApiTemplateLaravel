@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Repositories\Users\UserRepositoryEloquent;
+use App\Repositories\Implementations\Users\UserRepositoryEloquent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
  * Class VerificationRequest
  * @package App\Http\Requests\Auth
  */
-class EmailVerificationRequest extends FormRequest
+class ConfirmationRegistrationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,10 +31,16 @@ class EmailVerificationRequest extends FormRequest
     public function rules(UserRepositoryEloquent $userRepository)
     {
         return [
-            'id' => ['required', 'integer', 'exists:users'],
-            'activation_token' => ['required', 'string', 'exists:users'],
+            'email' => ['required_without:phone', 'email', 'exists:users'],
+            'phone' => ['required_without:email', 'string', 'size:11', 'exists:users,cell_phone'],
+            'token' => ['required', 'string', 'min:6', 'max:6', 'exists:users,confirmation_token'],
             'password' => [Rule::requiredIf(function () use ($userRepository) {
-                $user = $userRepository->findWhere(['id' => $this->request->get('id')])->first();
+                $user = $userRepository->scopeQuery(function ($query)  {
+                    return $this->has('email') ?
+                        $query->where('email', $this->get('email')) :
+                        $query->orWhere('cell_phone', $this->get('phone'));
+                })->first();
+
                 return $user ? is_null($user->password) : false;
             }), 'string', 'max:20', 'confirmed'],
         ];

@@ -3,17 +3,14 @@
 namespace App\Exceptions;
 
 use App\Http\Resources\Shared\MessageResponseResource;
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -37,52 +34,52 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Report or log an exception.
+     * Register the exception handling callbacks for the application.
      *
-     * @param Throwable $exception
      * @return void
-     *
-     * @throws Exception
      */
-    public function report(Throwable $exception)
+    public function register()
     {
-        parent::report($exception);
-    }
+        $this->renderable(function (DeleteResourceException $exception) {
+            return (new MessageResponseResource($exception->getMessage()))
+                ->response()
+                ->setStatusCode(Response::HTTP_FORBIDDEN);;
+        });
 
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  Request  $request
-     * @param Throwable $exception
-     * @return JsonResponse|object
-     *
-     * @throws Throwable
-     */
-    public function render($request, Throwable $exception)
-    {
-        if ($exception instanceof DeleteResourceException)
-            return new MessageResponseResource(['success' => false, 'message' => $exception->getMessage()]);
-
-        if ($exception instanceof ValidationException)
-            return (new MessageResponseResource(['success' => false, 'message' => collect($exception->errors())->first()]))
+        $this->renderable(function (ValidationException $exception) {
+            return (new MessageResponseResource(collect(collect($exception->errors())->first())->first()))
                 ->response()
                 ->setStatusCode($exception->status);
+        });
 
-        if ($exception instanceof ModelNotFoundException)
-            return (new MessageResponseResource(['success' => false, 'message' => $exception->getMessage()]))
+        $this->renderable(function (ModelNotFoundException $exception) {
+            return (new MessageResponseResource($exception->getMessage()))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
+        });
 
-        if ($exception instanceof NotFoundHttpException)
-            return (new MessageResponseResource(['success' => false, 'message' => 'Rota não encontrada.']))
+        $this->renderable(function (NotFoundHttpException $exception) {
+            return (new MessageResponseResource('Rota não encontrada.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_NOT_FOUND);
+        });
 
-        if ($exception instanceof UnauthorizedException || $exception instanceof AccessDeniedHttpException)
-            return (new MessageResponseResource(['success' => false, 'message' => 'O usuário não tem permissões para realizar essa operação.']))
+        $this->renderable(function (UnauthorizedException $exception) {
+            return (new MessageResponseResource('O usuário não tem permissões para realizar essa operação.'))
                 ->response()
                 ->setStatusCode(Response::HTTP_FORBIDDEN);
+        });
 
-        return parent::render($request, $exception);
+        $this->renderable(function (AccessDeniedHttpException $exception) {
+            return (new MessageResponseResource('O usuário não tem permissões para realizar essa operação.'))
+                ->response()
+                ->setStatusCode(Response::HTTP_FORBIDDEN);
+        });
+
+        $this->renderable(function (AuthorizationException $exception) {
+            return (new MessageResponseResource($exception->getMessage()))
+                ->response()
+                ->setStatusCode(Response::HTTP_FORBIDDEN);
+        });
     }
 }

@@ -2,7 +2,8 @@
 
 namespace App\Models\Auth;
 
-use App\User;
+use App\Models\User;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
@@ -13,13 +14,26 @@ use Illuminate\Notifications\Notifiable;
  */
 class PasswordReset extends Model
 {
-    use Notifiable;
+    use Notifiable, Uuid;
+
+    /**
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * @var string[]
      */
     protected $fillable = [
-        'email', 'token'
+        'user_id',
+        'email',
+        'phone',
+        'token',
     ];
 
     /**

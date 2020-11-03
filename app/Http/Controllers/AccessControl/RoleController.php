@@ -6,10 +6,11 @@ use App\Exceptions\DeleteResourceException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessControl\Roles\CreateRoleRequest;
 use App\Http\Requests\AccessControl\Roles\IndexRoleRequest;
+use App\Http\Requests\AccessControl\Roles\ShowRoleRequest;
 use App\Http\Requests\AccessControl\Roles\UpdateRoleRequest;
 use App\Http\Resources\AccessControl\RoleResource;
 use App\Http\Resources\Shared\MessageResponseResource;
-use App\Repositories\AccessControl\RoleRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
 use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Prettus\Repository\Exceptions\RepositoryException;
@@ -23,7 +24,7 @@ class RoleController extends Controller
     /**
      * @var RoleRepositoryEloquent
      */
-    private $roleRepository;
+    private RoleRepositoryEloquent $roleRepository;
 
     /**
      * RoleController constructor.
@@ -31,28 +32,19 @@ class RoleController extends Controller
      */
     public function __construct(RoleRepositoryEloquent $roleRepository)
     {
-        $this->middleware(['auth:api', 'permission:Listar Função'])->only('index');
-        $this->middleware(['auth:api', 'permission:Criar Função'])->only('store');
-        $this->middleware(['auth:api', 'permission:Visualizar Função'])->only('show');
-        $this->middleware(['auth:api', 'permission:Editar Função'])->only('update');
-        $this->middleware(['auth:api', 'permission:Deletar Função'])->only('destroy');
+        $this->middleware(['auth:api', 'verify_permission']);
 
         $this->roleRepository = $roleRepository;
     }
 
     /**
-     * Display a listing of the resource.
-     *
      * @param IndexRoleRequest $request
      * @return AnonymousResourceCollection
      */
     public function index(IndexRoleRequest $request): AnonymousResourceCollection
     {
-        $roles = $this->roleRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where($request->search ?? []);
-        })->paginate($request->paginate ?? 10);
-
-        return RoleResource::collection($roles);
+        $roles = filterResources($this->roleRepository, $request);
+        return RoleResource::collection($roles)->additional(['meta' => ['message' => 'Funções recuperadas com sucesso!']]);
     }
 
     /**
@@ -63,41 +55,42 @@ class RoleController extends Controller
     public function store(CreateRoleRequest $request): RoleResource
     {
         $role = $this->roleRepository->create($request->all());
-        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões cadastrado com sucesso!']]);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função cadastrada com sucesso!']]);
     }
 
     /**
-     * @param $id
+     * @param ShowRoleRequest $request
+     * @param string $id
      * @return RoleResource
      */
-    public function show(int $id): RoleResource
+    public function show(ShowRoleRequest $request, string $id): RoleResource
     {
-        $role = $this->roleRepository->find($id);
-        return new RoleResource($role);
+        $role = getResource($this->roleRepository, $request, $id);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função recuperada com sucesso!']]);
     }
 
     /**
      * @param UpdateRoleRequest $request
-     * @param int $id
+     * @param string $id
      * @return RoleResource
      * @throws RepositoryException
      */
-    public function update(UpdateRoleRequest $request, int $id)
+    public function update(UpdateRoleRequest $request, string $id)
     {
         $role = $this->roleRepository->update($request->all(), $id);
-        return (new RoleResource($role))->additional(['data' => ['message' => 'Grupo de Permissões atualizado com sucesso!']]);
+        return (new RoleResource($role))->additional(['meta' => ['message' => 'Função atualizada com sucesso!']]);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return MessageResponseResource
-     * @throws Exception
+     * @throws DeleteResourceException
      */
-    public function destroy(int $id): MessageResponseResource
+    public function destroy(string $id): MessageResponseResource
     {
         try {
             $this->roleRepository->delete($id);
-            return new MessageResponseResource(['success' => true, 'message' => 'Grupo de Permissões removido com successo!']);
+            return new MessageResponseResource('Função removida com successo!');
         } catch (Exception $exception) {
             throw new DeleteResourceException($exception->getMessage());
         }

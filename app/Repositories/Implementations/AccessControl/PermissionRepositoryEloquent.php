@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Repositories\AccessControl;
+namespace App\Repositories\Implementations\AccessControl;
 
+use App\Models\AccessControl\Permission;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\Contracts\AccessControl\PermissionRepository;
-use Spatie\Permission\Models\Permission;
 
 /**
- * Class PermissionRepositoryEloquent.
- * @package namespace App\Repositories\AccessControl;
+ * Class PermissionRepositoryEloquent
+ * @package App\Repositories\Implementations\AccessControl
  */
 class PermissionRepositoryEloquent extends BaseRepository implements PermissionRepository
 {

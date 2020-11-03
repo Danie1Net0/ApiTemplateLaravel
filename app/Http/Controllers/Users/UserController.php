@@ -9,7 +9,7 @@ use App\Http\Requests\Users\ShowUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use App\Http\Resources\Shared\MessageResponseResource;
 use App\Http\Resources\Users\UserResource;
-use App\Repositories\Users\UserRepositoryEloquent;
+use App\Repositories\Implementations\Users\UserRepositoryEloquent;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Prettus\Repository\Exceptions\RepositoryException;
 
@@ -22,7 +22,7 @@ class UserController extends Controller
     /**
      * @var UserRepositoryEloquent
      */
-    private $userRepository;
+    private UserRepositoryEloquent $userRepository;
 
     /**
      * UserController constructor.
@@ -30,10 +30,7 @@ class UserController extends Controller
      */
     public function __construct(UserRepositoryEloquent $userRepository)
     {
-        $this->middleware(['auth:api', 'permission:Listar Usuário'])->only('index');
-        $this->middleware(['auth:api', 'permission:Visualizar Usuário'])->only('show');
-        $this->middleware(['auth:api', 'permission:Editar Usuário'])->only('update');
-        $this->middleware(['auth:api', 'permission:Deletar Usuário'])->only('destroy');
+        $this->middleware(['auth:sanctum', 'verify_permission'])->except('store');
 
         $this->userRepository = $userRepository;
     }
@@ -42,70 +39,52 @@ class UserController extends Controller
      * @param IndexUserRequest $request
      * @return AnonymousResourceCollection
      */
-    public function index(IndexUserRequest $request)
+    public function index(IndexUserRequest $request): AnonymousResourceCollection
     {
-        $users = $this->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles', 'permissions'])
-            ->scopeQuery(function ($query) use ($request) {
-                return $query->where($request->search ?? [])->role($request->roles ?? 'Usuário');
-            });
-
-        $users = $request->paginate ?
-            $users->paginate($request->paginate, $request->columns ?? ['*']) :
-            $users->get($request->columns ?? ['*']);
-
-        return UserResource::collection($users);
+        $users = filterResources($this->userRepository, $request, true);
+        return UserResource::collection($users)->additional(['meta' => 'Usuários recuperados com sucesso!']);
     }
 
     /**
      * @param CreateUserRequest $request
      * @return UserResource
-     * @throws RepositoryException
      */
     public function store(CreateUserRequest $request): UserResource
     {
         $user = $this->userRepository->create($request->all());
-        return (new UserResource($user))->additional(['data' => ['message' => 'Usuário cadastrado com sucesso!']]);
+        return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário cadastrado com sucesso!']]);
     }
 
     /**
      * @param ShowUserRequest $request
-     * @param int $id
+     * @param string $id
      * @return UserResource
      */
-    public function show(ShowUserRequest $request, int $id): UserResource
+    public function show(ShowUserRequest $request, string $id): UserResource
     {
-        $user = $this->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles', 'permissions'])
-            ->find($id, $request->columns ?? ['*']);
-
-        return new UserResource($user);
+        $user = getResource($this->userRepository, $request, $id);
+        return (new UserResource($user))->additional(['meta' => 'Usuário recuperado com sucesso!']);
     }
 
     /**
      * @param UpdateUserRequest $request
-     * @param int $id
+     * @param string $id
      * @return UserResource
-     * @throws RepositoryException
      */
-    public function update(UpdateUserRequest $request, int $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
-        $user = $this
-            ->userRepository
-            ->with($request->relationships ?? ['avatar', 'telephones', 'roles'])
-            ->update($request->all(), $id);
-
-        return (new UserResource($user))->additional(['data' => ['message' => 'Usuário atualizado com sucesso!']]);
+        $user = $this->userRepository->update($request->all(), $id);
+        return (new UserResource($user))->additional(['meta' => ['message' => 'Usuário atualizado com sucesso!']]);
     }
 
     /**
-     * @param int $id
+     * @param string $id
      * @return MessageResponseResource
      * @throws RepositoryException
      */
-    public function destroy(int $id): MessageResponseResource
+    public function destroy(string $id): MessageResponseResource
     {
         $this->userRepository->delete($id);
-        return new MessageResponseResource(['success' => true, 'message' => 'Usuário removido com sucesso!']);
+        return new MessageResponseResource('Usuário removido com sucesso!');
     }
 }

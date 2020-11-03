@@ -18,7 +18,7 @@ class CreateRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Cadastrar Função');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
@@ -31,7 +31,7 @@ class CreateRoleRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'unique:roles'],
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['required', 'integer', 'exists:permissions,id']
+            'permissions.*' => ['required', 'string', 'exists:permissions,id']
         ];
     }
 }

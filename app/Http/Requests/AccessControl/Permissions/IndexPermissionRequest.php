@@ -2,6 +2,11 @@
 
 namespace App\Http\Requests\AccessControl\Permissions;
 
+use App\Models\AccessControl\Permission;
+use App\Rules\Shared\CheckIfColumnExistsRule;
+use App\Rules\Shared\CheckIfRelationshipExistsRule;
+use App\Rules\Shared\CheckOrderParamRule;
+use App\Rules\Shared\CheckSearchParamsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +23,7 @@ class IndexPermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Listar Permissão');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
@@ -30,8 +35,11 @@ class IndexPermissionRequest extends FormRequest
     {
         return [
             'paginate' => ['nullable', 'integer', 'min:1'],
-            'search' => ['nullable', 'array'],
-            'search.*' => ['required', 'min:2', 'max:3']
+            'conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
+            'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('permissions')],
+            'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('permissions')],
+            'order' => ['nullable', 'string', new CheckOrderParamRule('permissions')],
+            'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(Permission::class)],
         ];
     }
 }

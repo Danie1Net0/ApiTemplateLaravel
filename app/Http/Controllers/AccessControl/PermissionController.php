@@ -4,8 +4,9 @@ namespace App\Http\Controllers\AccessControl;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessControl\Permissions\IndexPermissionRequest;
+use App\Http\Requests\AccessControl\Permissions\ShowPermissionRequest;
 use App\Http\Resources\AccessControl\PermissionResource;
-use App\Repositories\AccessControl\PermissionRepositoryEloquent;
+use App\Repositories\Implementations\AccessControl\PermissionRepositoryEloquent;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -17,7 +18,7 @@ class PermissionController extends Controller
     /**
      * @var PermissionRepositoryEloquent
      */
-    private $permissionRepository;
+    private PermissionRepositoryEloquent $permissionRepository;
 
     /**
      * PermissionController constructor.
@@ -25,8 +26,7 @@ class PermissionController extends Controller
      */
     public function __construct(PermissionRepositoryEloquent $permissionRepository)
     {
-        $this->middleware(['auth:api', 'permission:listar-permissao'])->only('index');
-        $this->middleware(['auth:api', 'permission:visualizar-permissao'])->only('show');
+        $this->middleware(['auth:sanctum', 'verify_permission']);
 
         $this->permissionRepository = $permissionRepository;
     }
@@ -37,22 +37,18 @@ class PermissionController extends Controller
      */
     public function index(IndexPermissionRequest $request): AnonymousResourceCollection
     {
-        $permissions = $this->permissionRepository->scopeQuery(function ($query) use ($request) {
-            return $query->where($request->search ?? []);
-        });
-        
-        $permissions = $request->paginate ? $permissions->paginate($request->paginate) : $permissions->all();
-
-        return PermissionResource::collection($permissions);
+        $permissions = filterResources($this->permissionRepository, $request);
+        return PermissionResource::collection($permissio8|l36ShOQHbajEhVQnHtSvuNT9syt9vyN1qn6eCfOOns)->additional(['meta' => 'Permissões recuperadas com sucesso!']);
     }
 
     /**
-     * @param int $id
+     * @param ShowPermissionRequest $request
+     * @param string $id
      * @return PermissionResource
      */
-    public function show(int $id): PermissionResource
+    public function show(ShowPermissionRequest $request, string $id): PermissionResource
     {
-        $permission = $this->permissionRepository->find($id);
-        return new PermissionResource($permission);
+        $permission = getResource($this->permissionRepository, $request, $id);
+        return (new PermissionResource($permission))->additional(['meta' => 'Permissão recuperada com sucesso!']);
     }
 }

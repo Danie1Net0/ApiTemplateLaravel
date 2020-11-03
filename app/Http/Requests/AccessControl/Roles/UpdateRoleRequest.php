@@ -19,7 +19,7 @@ class UpdateRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Editar Função');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
@@ -32,7 +32,7 @@ class UpdateRoleRequest extends FormRequest
         return [
             'name' => ['required', 'string', Rule::unique('roles')->ignore($this->role)],
             'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['required', 'integer', 'exists:permissions,id']
+            'permissions.*' => ['required', 'string', 'exists:permissions,id']
         ];
     }
 }

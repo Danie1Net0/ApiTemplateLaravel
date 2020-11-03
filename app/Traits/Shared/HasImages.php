@@ -17,8 +17,9 @@ trait HasImages
      */
     public function updateImage(string $imageableName, object $path): void
     {
-        if (isset($this->{$imageableName}->path) && $this->{$imageableName}->path != 'public/images/default.png')
+        if (isset($this->{$imageableName}->path) && $this->{$imageableName}->path != 'public/images/default.png') {
             Storage::delete($this->{$imageableName}->path);
+        }
 
         $pathImage = Storage::put('public/images', $path);
 
@@ -30,8 +31,9 @@ trait HasImages
      */
     public function deleteImage(string $imageableName): void
     {
-        if (isset($this->{$imageableName}->path) && $this->{$imageableName}->path != 'public/images/default.png')
+        if (isset($this->{$imageableName}->path) && $this->{$imageableName}->path != 'public/images/default.png') {
             Storage::delete($this->{$imageableName}->path);
+        }
 
         $this->{$imageableName}()->delete();
     }

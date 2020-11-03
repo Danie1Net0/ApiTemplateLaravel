@@ -1,18 +1,20 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Models\Auth\PasswordReset;
 use App\Models\Shared\Image;
 use App\Models\Shared\Telephone;
 use App\Traits\Shared\HasImages;
 use App\Traits\Shared\HasTelephones;
+use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Uuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -21,7 +23,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, HasRoles, HasTelephones, HasImages;
+    use HasApiTokens, HasFactory, HasImages, HasRoles, HasTelephones, Notifiable, Uuid;
 
     /**
      * @var string
@@ -29,14 +31,25 @@ class User extends Authenticatable
     protected $guard_name = 'api';
 
     /**
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * @var string[]
      */
     protected $fillable = [
         'name',
         'email',
+        'cell_phone',
         'password',
         'is_active',
-        'activation_token',
+        'confirmation_token',
     ];
 
     /**
@@ -46,7 +59,7 @@ class User extends Authenticatable
         'id',
         'name',
         'email',
-        'password',
+        'cell_phone',
         'is_active',
         'telephones',
         'roles',
@@ -60,7 +73,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'activation_token',
+        'confirmation_token',
     ];
 
     /**

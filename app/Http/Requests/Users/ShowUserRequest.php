@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users;
 
 use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +21,7 @@ class ShowUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check() && Auth::user()->can('Visualizar Usuário');
+        return Auth::check() && Auth::user()->can($this->route()->getName());
     }
 
     /**
@@ -32,10 +32,8 @@ class ShowUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'columns' => ['nullable', 'array'],
-            'columns.*' => ['required', 'string', new CheckIfColumnExistsRule('users')],
-            'relationships' => ['nullable', 'array'],
-            'relationships.*' => ['required', 'string', new CheckIfRelationshipExistsRule(new User())]
+            'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('users')],
+            'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(User::class)],
         ];
     }
 }

@@ -232,7 +232,7 @@ return [
         'stubsOverridePath' => app()->path(),
         'paths'         => [
             'models'       => 'Models',
-            'repositories' => 'Repositories',
+            'repositories' => 'Repositories/Implementations',
             'interfaces'   => 'Repositories/Contracts',
             'transformers' => 'Transformers',
             'presenters'   => 'Presenters',

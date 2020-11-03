@@ -2,6 +2,7 @@
 
 namespace App\Rules\Shared;
 
+use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Schema;
 
@@ -14,16 +15,15 @@ class CheckIfColumnExistsRule implements Rule
     /**
      * @var string
      */
-    private $tableName;
+    private string $tableName;
 
     /**
      * @var string
      */
-    private $value;
+    private string $value;
 
     /**
      * Create a new rule instance.
-     *
      * @param string $tableName
      */
     public function __construct(string $tableName)
@@ -34,14 +34,20 @@ class CheckIfColumnExistsRule implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
-        $this->value = $value;
-        return Schema::hasColumn($this->tableName, $value);
+        foreach (explode(',', $value) as $column) {
+            if (!Schema::hasColumn($this->tableName, $column)) {
+                $this->value = $column;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -49,7 +55,7 @@ class CheckIfColumnExistsRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return "A coluna {$this->value} não existe.";
     }
