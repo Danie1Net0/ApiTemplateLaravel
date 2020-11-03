@@ -72,6 +72,11 @@ function filterResources(BaseRepository $repository, Request $request, bool $sea
         $resources->with(explode(',', $request->get('relationships')));
     }
 
+    if ($request->has('order')) {
+        $order = explode(':', $request->get('order'));
+        $resources->orderBy($order[0], $order[1] ?? 'asc');
+    }
+
     $columns = $request->has('columns') ? explode(',', $request->get('columns')) : ['*'];
 
     if (!in_array('id', $columns)) {

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Users;
 
 use App\Repositories\Implementations\AccessControl\RoleRepositoryEloquent;
+use App\Rules\Shared\CheckOrderParamRule;
 use App\Rules\Shared\CheckIfColumnExistsRule;
 use App\Rules\Shared\CheckIfRelationshipExistsRule;
 use App\Rules\Shared\CheckIfRoleExistsRule;
@@ -41,6 +42,7 @@ class IndexUserRequest extends FormRequest
             'or-conditions' => ['nullable', 'string', new CheckSearchParamsRule('users')],
             'columns' => ['nullable', 'string', new CheckIfColumnExistsRule('users')],
             'relationships' => ['nullable', 'string', new CheckIfRelationshipExistsRule(User::class)],
+            'order' => ['nullable', 'string', new CheckOrderParamRule('users')],
             'roles' => ['nullable', 'string', new CheckIfRoleExistsRule($roleRepository)],
         ];
     }
